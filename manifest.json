@@ -1,7 +1,7 @@
 {
-  "name": "Tasks Tracker",
-  "short_name": "Tasks",
-  "description": "Personal task tracker with sections, priorities, and recurring tasks",
+  "name": "Atlas",
+  "short_name": "Atlas",
+  "description": "Personal hub for tasks, notes, bookmarks, and reminders",
   "start_url": "./todo.html",
   "scope": "./",
   "display": "standalone",
