@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Tasks Tracker</title>
+<title>Atlas</title>
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#09090b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="Tasks Tracker" />
+<meta name="apple-mobile-web-app-title" content="Atlas" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="icon" type="image/svg+xml" href="icon.svg" />
 <link rel="apple-touch-icon" href="icon.svg" />
@@ -265,6 +265,44 @@
   .menu-info { padding: 8px 10px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
   .menu-info .name { font-size: 13px; font-weight: 500; color: var(--text); }
   .menu-info .email { font-size: 11px; color: var(--text-secondary); margin-top: 1px; word-break: break-all; }
+
+  /* Sheet tabs */
+  .tab-bar {
+    display: flex; gap: 4px; padding: 10px 32px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: none; border: none; color: var(--text-secondary);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 9px 16px; cursor: pointer;
+    border-radius: 7px 7px 0 0;
+    border: 1px solid transparent; border-bottom: none;
+    margin-bottom: -1px;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--accent-soft); }
+  .tab-btn { white-space: nowrap; flex-shrink: 0; }
+  .tab-btn.active {
+    color: var(--accent); background: var(--surface);
+    border-color: var(--border); border-bottom-color: var(--surface);
+  }
+  .tab-btn .tab-icon {
+    width: 14px; height: 14px;
+  }
+  .tab-btn .tab-count {
+    background: var(--surface-elevated); color: var(--text-secondary);
+    padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .tab-btn.active .tab-count {
+    background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border);
+  }
 
   /* Stats strip */
   .stats-strip {
@@ -744,13 +782,333 @@
     font-weight: 600; color: var(--text); flex-shrink: 0;
   }
 
+  /* Notes view */
+  .new-note-bar { padding: 14px 32px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .new-note-toggle {
+    background: none; border: none; color: var(--accent);
+    font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 0;
+    display: inline-flex; align-items: center; gap: 8px; transition: color 0.15s;
+    font-family: inherit;
+  }
+  .new-note-toggle:hover { color: var(--accent-hover); }
+  .new-note-toggle .plus {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 5px; font-weight: 600; line-height: 1;
+    border: 1px solid var(--accent-border);
+  }
+  .new-note-form { display: none; flex-direction: column; gap: 10px; }
+  .new-note-form.open { display: flex; }
+  .new-note-bar.open .new-note-toggle { display: none; }
+  .new-note-form .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .new-note-textarea {
+    width: 100%; min-height: 80px; resize: vertical;
+    padding: 9px 12px; border: 1px solid var(--border-strong); border-radius: 7px;
+    font-size: 13px; font-family: inherit; color: var(--text);
+    background: var(--surface-elevated); outline: none; line-height: 1.55;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .new-note-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .notes-empty {
+    text-align: center; padding: 40px 20px; color: var(--text-muted);
+    font-size: 13px; font-style: italic;
+  }
+  .note-card {
+    background: var(--surface-soft); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    transition: border-color 0.2s;
+    border-left: 3px solid var(--c-amber);
+  }
+  .note-card:last-child { margin-bottom: 0; }
+  .note-card:hover { border-color: var(--border-strong); }
+  .note-card.color-0 { border-left-color: var(--c-indigo); }
+  .note-card.color-1 { border-left-color: var(--c-emerald); }
+  .note-card.color-2 { border-left-color: var(--c-amber); }
+  .note-card.color-3 { border-left-color: var(--c-pink); }
+  .note-card.color-4 { border-left-color: var(--c-cyan); }
+  .note-card.color-5 { border-left-color: var(--c-violet); }
+  .note-card.color-6 { border-left-color: var(--c-rose); }
+  .note-card.color-7 { border-left-color: var(--c-teal); }
+
+  .note-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .note-title-input {
+    flex: 1; font-size: 15px; font-weight: 700;
+    background: transparent; border: 1px solid transparent;
+    padding: 5px 8px; margin-left: -8px; border-radius: 5px; outline: none;
+    transition: all 0.15s; font-family: inherit;
+    letter-spacing: -0.01em;
+  }
+  .note-title-input:hover { background: var(--accent-soft); }
+  .note-title-input:focus { background: var(--surface); border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-soft); }
+  /* Rotating header colors — match each note's left border accent */
+  .note-card.color-0 .note-title-input { color: var(--c-indigo); }
+  .note-card.color-1 .note-title-input { color: var(--c-emerald); }
+  .note-card.color-2 .note-title-input { color: var(--c-amber); }
+  .note-card.color-3 .note-title-input { color: var(--c-pink); }
+  .note-card.color-4 .note-title-input { color: var(--c-cyan); }
+  .note-card.color-5 .note-title-input { color: var(--c-violet); }
+  .note-card.color-6 .note-title-input { color: var(--c-rose); }
+  .note-card.color-7 .note-title-input { color: var(--c-teal); }
+
+  /* Tinted header band per note — matches the note's accent. Body stays neutral. */
+  .note-card .note-head {
+    margin: -14px -16px 12px -16px;
+    padding: 10px 16px;
+    border-radius: 11px 11px 0 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  body.theme-light .note-card .note-head {
+    border-bottom-color: rgba(15,23,42,0.05);
+  }
+  .note-card.color-0 .note-head { background: rgba(129, 140, 248, 0.10); }
+  .note-card.color-1 .note-head { background: rgba(52, 211, 153, 0.10); }
+  .note-card.color-2 .note-head { background: rgba(251, 191, 36, 0.10); }
+  .note-card.color-3 .note-head { background: rgba(244, 114, 182, 0.10); }
+  .note-card.color-4 .note-head { background: rgba(34, 211, 238, 0.10); }
+  .note-card.color-5 .note-head { background: rgba(192, 132, 252, 0.10); }
+  .note-card.color-6 .note-head { background: rgba(251, 113, 133, 0.10); }
+  .note-card.color-7 .note-head { background: rgba(45, 212, 191, 0.10); }
+  body.theme-light .note-card.color-0 .note-head { background: rgba(67, 56, 202, 0.06); }
+  body.theme-light .note-card.color-1 .note-head { background: rgba(5, 150, 105, 0.07); }
+  body.theme-light .note-card.color-2 .note-head { background: rgba(217, 119, 6, 0.08); }
+  body.theme-light .note-card.color-3 .note-head { background: rgba(219, 39, 119, 0.06); }
+  body.theme-light .note-card.color-4 .note-head { background: rgba(8, 145, 178, 0.07); }
+  body.theme-light .note-card.color-5 .note-head { background: rgba(126, 34, 206, 0.06); }
+  body.theme-light .note-card.color-6 .note-head { background: rgba(225, 29, 72, 0.06); }
+  body.theme-light .note-card.color-7 .note-head { background: rgba(13, 148, 136, 0.07); }
+
+  /* Bullet button in note head */
+  .note-bullet-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface-elevated); color: var(--accent);
+    border: 1px solid var(--border); border-radius: 5px;
+    padding: 3px 8px; font-size: 14px; line-height: 1;
+    cursor: pointer; font-family: inherit; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .note-bullet-btn:hover {
+    color: var(--accent-hover); border-color: var(--accent-border);
+    background: var(--accent-soft);
+  }
+  .note-bullet-btn .bullet-glyph { font-size: 16px; line-height: 1; margin-right: 4px; }
+  .note-bullet-btn .bullet-label { font-size: 11px; font-weight: 600; }
+
+  .note-content-textarea {
+    width: 100%; min-height: 60px; resize: vertical;
+    padding: 8px 10px; border: 1px solid transparent; border-radius: 6px;
+    font-size: 13px; font-family: inherit; color: var(--text);
+    background: transparent; outline: none; line-height: 1.6;
+    transition: all 0.15s; white-space: pre-wrap;
+  }
+  .note-content-textarea:hover { background: var(--surface-elevated); }
+  .note-content-textarea:focus {
+    background: var(--surface); border-color: var(--accent-border);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .note-content-textarea::placeholder { color: var(--text-muted); font-style: italic; }
+
+  .note-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--text-muted); margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .note-meta .icon-btn { opacity: 0; }
+  .note-card:hover .note-meta .icon-btn { opacity: 1; }
+
+  /* Bookmarks view */
+  .new-bookmark-bar, .new-reminder-bar {
+    padding: 14px 32px; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .new-bookmark-toggle, .new-reminder-toggle {
+    background: none; border: none; color: var(--accent);
+    font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 0;
+    display: inline-flex; align-items: center; gap: 8px; transition: color 0.15s;
+    font-family: inherit;
+  }
+  .new-bookmark-toggle:hover, .new-reminder-toggle:hover { color: var(--accent-hover); }
+  .new-bookmark-toggle .plus, .new-reminder-toggle .plus {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 5px; font-weight: 600; line-height: 1;
+    border: 1px solid var(--accent-border);
+  }
+  .new-bookmark-form, .new-reminder-form { display: none; flex-direction: column; gap: 10px; }
+  .new-bookmark-form.open, .new-reminder-form.open { display: flex; }
+  .new-bookmark-bar.open .new-bookmark-toggle,
+  .new-reminder-bar.open .new-reminder-toggle { display: none; }
+  .new-bookmark-form .row, .new-reminder-form .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .bookmark-filters {
+    padding: 10px 32px; border-bottom: 1px solid var(--border);
+    background: var(--surface-soft);
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  }
+  .bookmark-filter-pill {
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+    background: var(--surface-elevated); color: var(--text-secondary);
+    border: 1px solid var(--border); cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .bookmark-filter-pill:hover { color: var(--text); border-color: var(--border-strong); }
+  .bookmark-filter-pill.active {
+    background: var(--accent-soft); color: var(--accent);
+    border-color: var(--accent-border);
+  }
+
+  .bookmark-card {
+    background: var(--surface-soft); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    transition: border-color 0.2s;
+    border-left: 3px solid var(--c-cyan);
+  }
+  .bookmark-card:last-child { margin-bottom: 0; }
+  .bookmark-card:hover { border-color: var(--border-strong); }
+  .bookmark-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+  }
+  .bookmark-title-input {
+    flex: 1; font-size: 14px; font-weight: 700; color: var(--text);
+    background: transparent; border: 1px solid transparent;
+    padding: 4px 8px; margin-left: -8px; border-radius: 5px; outline: none;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .bookmark-title-input:hover { background: var(--accent-soft); }
+  .bookmark-title-input:focus { background: var(--surface); border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .bookmark-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--accent); text-decoration: none; font-size: 12px;
+    word-break: break-all; padding: 2px 0;
+  }
+  .bookmark-link:hover { color: var(--accent-hover); text-decoration: underline; }
+  .bookmark-link svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+  .bookmark-desc-input {
+    width: 100%; padding: 6px 8px;
+    border: 1px solid transparent; border-radius: 6px;
+    font-size: 12px; font-family: inherit; color: var(--text-secondary);
+    background: transparent; outline: none; line-height: 1.5;
+    transition: all 0.15s; margin-top: 4px;
+  }
+  .bookmark-desc-input:hover { background: var(--surface-elevated); color: var(--text); }
+  .bookmark-desc-input:focus {
+    background: var(--surface); border-color: var(--accent-border); color: var(--text);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .bookmark-desc-input::placeholder { color: var(--text-muted); font-style: italic; }
+
+  .bookmark-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--text-muted); margin-top: 6px;
+    gap: 8px; flex-wrap: wrap;
+  }
+  .bookmark-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid var(--accent-border);
+    font-size: 10px; font-weight: 600;
+  }
+  .bookmark-meta .icon-btn { opacity: 0; }
+  .bookmark-card:hover .icon-btn { opacity: 1; }
+
+  /* Reminders view */
+  .reminder-card {
+    background: var(--surface-soft); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    transition: border-color 0.2s;
+    border-left: 3px solid var(--c-pink);
+    display: flex; align-items: center; gap: 14px;
+    flex-wrap: wrap;
+  }
+  .reminder-card:last-child { margin-bottom: 0; }
+  .reminder-card:hover { border-color: var(--border-strong); }
+  .reminder-card.is-today { border-left-color: var(--p0); background: rgba(248, 113, 113, 0.04); }
+  body.theme-light .reminder-card.is-today { background: rgba(220, 38, 38, 0.04); border-left-color: var(--p0); }
+  .reminder-card.is-soon { border-left-color: var(--warning); }
+
+  .reminder-icon-wrap {
+    width: 38px; height: 38px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface-elevated); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text-secondary);
+    font-size: 18px;
+  }
+  .reminder-card.is-today .reminder-icon-wrap {
+    background: rgba(248,113,113,0.1); color: var(--p0); border-color: rgba(248,113,113,0.3);
+  }
+
+  .reminder-main { flex: 1; min-width: 200px; }
+  .reminder-name {
+    font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px;
+  }
+  .reminder-sub {
+    font-size: 11px; color: var(--text-muted);
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .reminder-sub .reminder-type-badge {
+    display: inline-block; padding: 1px 7px; border-radius: 4px;
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    background: var(--surface-elevated); border: 1px solid var(--border);
+  }
+  .reminder-countdown {
+    flex-shrink: 0; text-align: right;
+    font-size: 13px; font-weight: 700; color: var(--text-secondary);
+  }
+  .reminder-card.is-today .reminder-countdown { color: var(--p0); }
+  .reminder-card.is-soon .reminder-countdown { color: var(--warning); }
+  .reminder-countdown .reminder-days {
+    font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 2px;
+  }
+
+  /* Settings cleanup section */
+  .cleanup-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .cleanup-row .cleanup-label { flex: 1; min-width: 180px; }
+  .cleanup-row .cleanup-label .notif-title { font-size: 12px; font-weight: 700; color: var(--text); }
+  .cleanup-row .cleanup-label .notif-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .cleanup-select {
+    padding: 6px 8px; border: 1px solid var(--border-strong);
+    border-radius: 5px; background: var(--surface-elevated);
+    color: var(--text); font-family: inherit; font-size: 12px;
+    outline: none; cursor: pointer;
+  }
+  .cleanup-select:focus { border-color: var(--accent); }
+
+  /* Footer credit */
+  footer {
+    padding: 18px 32px; text-align: center;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-muted);
+    background: var(--surface);
+  }
+  .footer-line {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .footer-credit {
+    color: var(--text-secondary); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: color 0.15s;
+  }
+  .footer-credit:hover { color: var(--accent); }
+  .footer-credit svg { width: 13px; height: 13px; }
+  .footer-sep { color: var(--text-muted); opacity: 0.5; }
+
   /* Mobile */
   @media (max-width: 600px) {
     body { padding: 0; font-size: 13px; }
     .container { border-radius: 0; border-left: none; border-right: none; border-top: none; min-height: 100vh; }
     header { padding: 16px 18px; flex-wrap: wrap; }
-    .new-section-bar, .pane, footer, .templates-toggle { padding-left: 18px; padding-right: 18px; }
+    .new-section-bar, .new-note-bar, .new-bookmark-bar, .new-reminder-bar, .bookmark-filters, .pane, footer, .templates-toggle { padding-left: 18px; padding-right: 18px; }
     .templates-content { padding-left: 18px; padding-right: 18px; }
+    .tab-bar { padding-left: 18px; padding-right: 18px; padding-top: 8px; }
+    .tab-btn { padding: 8px 12px; font-size: 12px; }
     .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 12px 18px; gap: 8px; }
     .stat-value { font-size: 17px; }
     .title-block h1.brand-title { font-size: 18px; letter-spacing: -0.018em; }
@@ -774,8 +1132,8 @@
 <div id="authScreen" class="auth-wrap" style="display:none;">
   <div class="auth-card">
     <div class="logo">✓</div>
-    <h1>Tasks Tracker</h1>
-    <p>Sign in to access your tasks on any device</p>
+    <h1>Atlas</h1>
+    <p>Sign in to access your data on any device</p>
     <button class="google-btn" id="signInBtn">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -801,7 +1159,7 @@
 <div id="app" class="container" style="display:none;">
   <header>
     <div class="title-block">
-      <h1 class="brand-title">Tasks Tracker</h1>
+      <h1 class="brand-title">Atlas</h1>
       <div class="date" id="todayDate"></div>
     </div>
     <div class="user-block">
@@ -823,7 +1181,7 @@
             <div class="email" id="menuEmail"></div>
           </div>
           <button class="menu-item" id="exportCsvBtn">Export tasks to CSV</button>
-          <button class="menu-item" id="notifSettingsBtn">Notification settings</button>
+          <button class="menu-item" id="notifSettingsBtn">Settings</button>
           <button class="menu-item" id="shortcutsBtn">Keyboard shortcuts</button>
           <div class="menu-divider"></div>
           <button class="menu-item" id="signOutBtn">Sign out</button>
@@ -831,6 +1189,44 @@
       </div>
     </div>
   </header>
+
+  <!-- Sheet tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabTasksBtn" type="button" data-tab="tasks">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+      <span class="tab-label">Tasks</span>
+    </button>
+    <button class="tab-btn" id="tabNotesBtn" type="button" data-tab="notes">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <path d="M14 2v6h6"/>
+        <path d="M8 13h8M8 17h6"/>
+      </svg>
+      <span class="tab-label">Notes</span>
+      <span class="tab-count" id="tabNotesCount">0</span>
+    </button>
+    <button class="tab-btn" id="tabBookmarksBtn" type="button" data-tab="bookmarks">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span class="tab-label">Bookmarks</span>
+      <span class="tab-count" id="tabBookmarksCount">0</span>
+    </button>
+    <button class="tab-btn" id="tabRemindersBtn" type="button" data-tab="reminders">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="11" r="3"/>
+      </svg>
+      <span class="tab-label">Reminders</span>
+      <span class="tab-count" id="tabRemindersCount">0</span>
+    </button>
+  </div>
+
+  <!-- Tasks view -->
+  <div id="tasksView">
 
   <!-- Stats strip -->
   <div class="stats-strip">
@@ -938,18 +1334,160 @@
     <div id="doneSections"></div>
   </div>
 
-  <footer>Synced via Firebase · <span id="footerEmail"></span></footer>
+  </div><!-- /tasksView -->
+
+  <!-- Notes view -->
+  <div id="notesView" style="display:none;">
+    <!-- New note -->
+    <div class="new-note-bar" id="newNoteBar">
+      <button class="new-note-toggle" id="newNoteToggle">
+        <span class="plus">+</span>
+        <span>New note</span>
+      </button>
+      <div class="new-note-form" id="newNoteForm">
+        <div class="row">
+          <input type="text" class="input-clean" id="newNoteTitle" placeholder="Note title" autocomplete="off" style="flex:1; min-width:200px;" />
+        </div>
+        <textarea class="new-note-textarea" id="newNoteContent" placeholder="Write your note here…"></textarea>
+        <div class="row">
+          <button class="btn btn-primary" id="addNoteBtn">Add note</button>
+          <button class="btn btn-ghost" id="cancelNoteBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes list -->
+    <div class="pane">
+      <div class="pane-head">
+        <span class="pane-title"><span class="dot" style="background: var(--c-amber); box-shadow: 0 0 8px var(--c-amber);"></span>Notes</span>
+        <div class="pane-actions"><span id="notesCount">0 notes</span></div>
+      </div>
+      <div id="notesList"></div>
+    </div>
+  </div>
+
+  <!-- Bookmarks view -->
+  <div id="bookmarksView" style="display:none;">
+    <div class="new-bookmark-bar" id="newBookmarkBar">
+      <button class="new-bookmark-toggle" id="newBookmarkToggle">
+        <span class="plus">+</span>
+        <span>New bookmark</span>
+      </button>
+      <div class="new-bookmark-form" id="newBookmarkForm">
+        <div class="row">
+          <input type="url" class="input-clean" id="newBookmarkUrl" placeholder="https://example.com" autocomplete="off" style="flex:1; min-width:200px;" />
+        </div>
+        <div class="row">
+          <input type="text" class="input-clean" id="newBookmarkTitle" placeholder="Title" autocomplete="off" style="flex:2; min-width:200px;" />
+          <input type="text" class="input-clean" id="newBookmarkTag" placeholder="Tag (optional)" autocomplete="off" style="flex:1; min-width:120px;" />
+        </div>
+        <div class="row">
+          <input type="text" class="input-clean" id="newBookmarkDesc" placeholder="One-line description (optional)" autocomplete="off" style="flex:1; min-width:200px;" />
+        </div>
+        <div class="row">
+          <button class="btn btn-primary" id="addBookmarkBtn">Add bookmark</button>
+          <button class="btn btn-ghost" id="cancelBookmarkBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bookmark-filters" id="bookmarkFilters" style="display:none;"></div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="pane-title"><span class="dot" style="background: var(--c-cyan); box-shadow: 0 0 8px var(--c-cyan);"></span>Bookmarks</span>
+        <div class="pane-actions"><span id="bookmarksHeaderCount">0 bookmarks</span></div>
+      </div>
+      <div id="bookmarksList"></div>
+    </div>
+  </div>
+
+  <!-- Reminders view -->
+  <div id="remindersView" style="display:none;">
+    <div class="new-reminder-bar" id="newReminderBar">
+      <button class="new-reminder-toggle" id="newReminderToggle">
+        <span class="plus">+</span>
+        <span>New reminder</span>
+      </button>
+      <div class="new-reminder-form" id="newReminderForm">
+        <div class="row">
+          <input type="text" class="input-clean" id="newReminderName" placeholder="Name (e.g. Mom's birthday)" autocomplete="off" style="flex:1; min-width:200px;" />
+        </div>
+        <div class="row">
+          <span class="form-label">Type</span>
+          <div class="type-selector" id="reminderTypeSelector">
+            <button type="button" class="type-option active" data-rtype="birthday">Birthday</button>
+            <button type="button" class="type-option" data-rtype="anniversary">Anniversary</button>
+            <button type="button" class="type-option" data-rtype="other">Other</button>
+          </div>
+        </div>
+        <div class="row">
+          <span class="form-label">Date</span>
+          <select class="priority-select" id="newReminderMonth" style="min-width:110px;"></select>
+          <select class="priority-select" id="newReminderDay" style="min-width:80px;"></select>
+          <input type="number" class="input-clean" id="newReminderYear" placeholder="Year (optional)" autocomplete="off" min="1900" max="2099" style="width:140px;" />
+        </div>
+        <div class="row">
+          <input type="text" class="input-clean" id="newReminderNote" placeholder="Note (optional)" autocomplete="off" style="flex:1; min-width:200px;" />
+        </div>
+        <div class="row">
+          <button class="btn btn-primary" id="addReminderBtn">Add reminder</button>
+          <button class="btn btn-ghost" id="cancelReminderBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="pane-title"><span class="dot" style="background: var(--c-pink); box-shadow: 0 0 8px var(--c-pink);"></span>Reminders</span>
+        <div class="pane-actions"><span id="remindersHeaderCount">0 reminders</span></div>
+      </div>
+      <div id="remindersList"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-line">
+      <span>Synced via Firebase</span>
+      <span class="footer-sep">·</span>
+      <a class="footer-credit" href="https://www.instagram.com/imsarathc/" target="_blank" rel="noopener noreferrer" title="Developed by ImSarathC — visit on Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+        </svg>
+        <span>Developed by ImSarathC</span>
+      </a>
+    </div>
+  </footer>
 </div>
 
 <!-- Notification settings modal -->
 <div class="modal-backdrop" id="notifModalBackdrop">
   <div class="modal">
     <div class="modal-head">
-      <h2>Notification settings</h2>
+      <h2>Settings</h2>
       <button class="icon-btn" id="closeNotifModalBtn">&times;</button>
     </div>
     <div class="modal-body">
       <div class="notif-section">
+        <div class="cleanup-row">
+          <div class="cleanup-label">
+            <div class="notif-title">Auto-delete completed tasks</div>
+            <div class="notif-sub">Permanently remove closed tasks after this many days</div>
+          </div>
+          <select id="cleanupRetentionSelect" class="cleanup-select">
+            <option value="0">Never</option>
+            <option value="30">30 days</option>
+            <option value="60">60 days</option>
+            <option value="90">90 days</option>
+          </select>
+        </div>
+
+        <div class="notif-divider"></div>
+
+        <div style="font-size:13px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:-4px;">Notifications</div>
+
         <div class="notif-row">
           <label class="toggle-switch">
             <input type="checkbox" id="notifMasterToggle">
@@ -1034,7 +1572,8 @@
       <button class="icon-btn" id="closeModalBtn">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="kbd-row"><kbd>N</kbd><span>New section</span></div>
+      <div class="kbd-row"><kbd>N</kbd><span>New section / note / bookmark / reminder (depends on tab)</span></div>
+      <div class="kbd-row"><kbd>T</kbd><span>Cycle through tabs (Shift+T cycles back)</span></div>
       <div class="kbd-row"><kbd>R</kbd><span>Toggle recurring tasks panel</span></div>
       <div class="kbd-row"><kbd>D</kbd><span>Toggle dark / light mode</span></div>
       <div class="kbd-row"><kbd>E</kbd><span>Export tasks to CSV</span></div>
@@ -1096,14 +1635,28 @@
     let unsubTasks = null;
     let unsubTemplates = null;
     let unsubSettings = null;
+    let unsubNotes = null;
+    let unsubBookmarks = null;
+    let unsubReminders = null;
     let sections = [];
     let tasks = [];
     let templates = [];
-    let settings = { notifications: {} };
+    let notes = [];
+    let bookmarks = [];
+    let reminders = [];
+    let settings = { notifications: {}, cleanup: {} };
     let pendingWrites = 0;
     let selectedSectionType = "general";
+    let selectedReminderType = "birthday";
+    let bookmarkFilterTag = null;
     let editingTaskId = null;
+    let editingNoteId = null;
+    let editingBookmarkId = null;
     let notifTimers = [];
+    let cleanupRan = false;
+
+    const TAB_KEY = "tt.tab";
+    let activeTab = localStorage.getItem(TAB_KEY) || "tasks";
 
     $("todayDate").textContent = new Date().toLocaleDateString(undefined, {
       weekday: "long", year: "numeric", month: "long", day: "numeric"
@@ -1133,7 +1686,11 @@
         if (unsubTasks) unsubTasks();
         if (unsubTemplates) unsubTemplates();
         if (unsubSettings) unsubSettings();
+        if (unsubNotes) unsubNotes();
+        if (unsubBookmarks) unsubBookmarks();
+        if (unsubReminders) unsubReminders();
         clearNotifTimers();
+        cleanupRan = false;
         showAuth();
       }
     });
@@ -1150,7 +1707,6 @@
       const name = user.displayName || user.email;
       $("menuName").textContent = name;
       $("menuEmail").textContent = user.email;
-      $("footerEmail").textContent = user.email;
       const avatar = $("avatar");
       avatar.innerHTML = "";
       if (user.photoURL) {
@@ -1183,6 +1739,9 @@
       if (unsubSections) unsubSections();
       if (unsubTasks) unsubTasks();
       if (unsubTemplates) unsubTemplates();
+      if (unsubNotes) unsubNotes();
+      if (unsubBookmarks) unsubBookmarks();
+      if (unsubReminders) unsubReminders();
 
       unsubSections = onSnapshot(collection(db, "users", uid, "sections"), snap => {
         sections = snap.docs.map(d => ({ id: d.id, ...d.data() }))
@@ -1192,6 +1751,11 @@
       unsubTasks = onSnapshot(collection(db, "users", uid, "tasks"), snap => {
         tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
+        // Run auto-cleanup once per session, once both tasks and settings loaded
+        if (!cleanupRan && settings.cleanup?.tasksRetentionDays) {
+          cleanupRan = true;
+          runAutoCleanup();
+        }
       });
       unsubTemplates = onSnapshot(collection(db, "users", uid, "templates"), snap => {
         templates = snap.docs.map(d => ({ id: d.id, ...d.data() }))
@@ -1199,10 +1763,28 @@
         renderTemplates();
       });
       unsubSettings = onSnapshot(doc(db, "users", uid, "settings", "main"), snap => {
-        settings = snap.exists() ? snap.data() : { notifications: {} };
+        settings = snap.exists() ? snap.data() : { notifications: {}, cleanup: {} };
         if (!settings.notifications) settings.notifications = {};
+        if (!settings.cleanup) settings.cleanup = {};
         applySettingsToUI();
         scheduleAllNotifications();
+        // Trigger cleanup if it was deferred until settings loaded
+        if (!cleanupRan && tasks.length > 0 && settings.cleanup?.tasksRetentionDays) {
+          cleanupRan = true;
+          runAutoCleanup();
+        }
+      });
+      unsubNotes = onSnapshot(collection(db, "users", uid, "notes"), snap => {
+        notes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderNotes();
+      });
+      unsubBookmarks = onSnapshot(collection(db, "users", uid, "bookmarks"), snap => {
+        bookmarks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderBookmarks();
+      });
+      unsubReminders = onSnapshot(collection(db, "users", uid, "reminders"), snap => {
+        reminders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderReminders();
       });
     }
 
@@ -1471,6 +2053,95 @@
       batch.update(doc(db, "users", uid(), "templates", a.id), { order: ob });
       batch.update(doc(db, "users", uid(), "templates", b.id), { order: oa });
       await trackWrite(batch.commit());
+    }
+
+    // ---- Mutations: Notes ----
+    async function addNote(title, content) {
+      const t = (title || "").trim();
+      const c = (content || "").trim();
+      if (!t && !c) return;
+      await trackWrite(addDoc(collection(db, "users", uid(), "notes"), {
+        title: t || "Untitled",
+        content: c,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }));
+    }
+    async function updateNoteTitle(id, title) {
+      await trackWrite(updateDoc(doc(db, "users", uid(), "notes", id), {
+        title: (title || "").trim() || "Untitled",
+        updatedAt: serverTimestamp()
+      }));
+    }
+    async function updateNoteContent(id, content) {
+      await trackWrite(updateDoc(doc(db, "users", uid(), "notes", id), {
+        content: content || "",
+        updatedAt: serverTimestamp()
+      }));
+    }
+    async function deleteNote(id) {
+      const n = notes.find(x => x.id === id);
+      const label = n?.title || "this note";
+      if (!confirm(`Delete "${label}"? This cannot be undone.`)) return;
+      await trackWrite(deleteDoc(doc(db, "users", uid(), "notes", id)));
+    }
+
+    // ---- Mutations: Bookmarks ----
+    function normalizeUrl(url) {
+      const u = (url || "").trim();
+      if (!u) return "";
+      if (/^https?:\/\//i.test(u)) return u;
+      return "https://" + u;
+    }
+    function deriveTitle(url) {
+      try {
+        const u = new URL(normalizeUrl(url));
+        return u.hostname.replace(/^www\./, "");
+      } catch (_) { return url || ""; }
+    }
+    async function addBookmark({ url, title, description, tag }) {
+      const u = normalizeUrl(url);
+      if (!u) return;
+      await trackWrite(addDoc(collection(db, "users", uid(), "bookmarks"), {
+        url: u,
+        title: (title || "").trim() || deriveTitle(u),
+        description: (description || "").trim(),
+        tag: (tag || "").trim().toLowerCase(),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }));
+    }
+    async function updateBookmarkField(id, field, value) {
+      const update = { [field]: value, updatedAt: serverTimestamp() };
+      await trackWrite(updateDoc(doc(db, "users", uid(), "bookmarks", id), update));
+    }
+    async function deleteBookmark(id) {
+      const b = bookmarks.find(x => x.id === id);
+      if (!confirm(`Delete "${b?.title || "this bookmark"}"?`)) return;
+      await trackWrite(deleteDoc(doc(db, "users", uid(), "bookmarks", id)));
+    }
+
+    // ---- Mutations: Reminders ----
+    async function addReminder({ name, type, month, day, year, note }) {
+      const n = (name || "").trim();
+      if (!n || !month || !day) return;
+      await trackWrite(addDoc(collection(db, "users", uid(), "reminders"), {
+        name: n,
+        type: type || "birthday",
+        month: parseInt(month, 10),
+        day: parseInt(day, 10),
+        year: year ? parseInt(year, 10) : null,
+        note: (note || "").trim(),
+        createdAt: serverTimestamp()
+      }));
+    }
+    async function updateReminderField(id, field, value) {
+      await trackWrite(updateDoc(doc(db, "users", uid(), "reminders", id), { [field]: value }));
+    }
+    async function deleteReminder(id) {
+      const r = reminders.find(x => x.id === id);
+      if (!confirm(`Delete reminder "${r?.name || "this reminder"}"?`)) return;
+      await trackWrite(deleteDoc(doc(db, "users", uid(), "reminders", id)));
     }
 
     // ---- Sort a section's open tasks by priority ----
@@ -1886,6 +2557,514 @@
       });
     }
 
+    // ---- Render notes ----
+    function noteColorClass(id) {
+      let h = 0;
+      for (let i = 0; i < id.length; i++) h = (h + id.charCodeAt(i) * (i + 1)) >>> 0;
+      return "color-" + (h % 8);
+    }
+
+    function autoSizeTextarea(ta) {
+      ta.style.height = "auto";
+      ta.style.height = Math.max(60, ta.scrollHeight) + "px";
+    }
+
+    // ---- Bullet helpers (used by note textareas) ----
+    // Gmail-style: typing "- ", "* ", or "• " at the start of a line auto-becomes "• "
+    function handleBulletAutoTransform(ta) {
+      const pos = ta.selectionStart;
+      const v = ta.value;
+      const lineStart = v.lastIndexOf("\n", pos - 1) + 1;
+      const linePrefix = v.slice(lineStart, pos);
+      // Match "- ", "* ", or "• " (one char + single space) typed at start of line
+      if (/^[\-\*]\s$/.test(linePrefix)) {
+        ta.value = v.slice(0, lineStart) + "• " + v.slice(pos);
+        ta.selectionStart = ta.selectionEnd = lineStart + 2;
+        return true;
+      }
+      return false;
+    }
+    // Continue bullet on Enter; exit bullet on empty bulleted line
+    function handleBulletEnter(ta, e) {
+      if (e.key !== "Enter" || e.shiftKey) return false;
+      const pos = ta.selectionStart;
+      const v = ta.value;
+      const lineStart = v.lastIndexOf("\n", pos - 1) + 1;
+      const currentLine = v.slice(lineStart, pos);
+      const m = currentLine.match(/^([•\-\*])\s+(.*)$/);
+      if (!m) return false;
+      const rest = m[2];
+      if (rest.trim() === "") {
+        // Empty bulleted line → remove the bullet prefix and exit
+        e.preventDefault();
+        ta.value = v.slice(0, lineStart) + v.slice(pos);
+        ta.selectionStart = ta.selectionEnd = lineStart;
+      } else {
+        // Continue: insert "\n• " after cursor
+        e.preventDefault();
+        const insert = "\n• ";
+        ta.value = v.slice(0, pos) + insert + v.slice(pos);
+        ta.selectionStart = ta.selectionEnd = pos + insert.length;
+      }
+      autoSizeTextarea(ta);
+      return true;
+    }
+    // Insert "• " at the start of the current line (no-op if already a bullet)
+    function insertBulletAtCursor(ta) {
+      const wasFocused = document.activeElement === ta;
+      if (!wasFocused) ta.focus();
+      const pos = ta.selectionStart || 0;
+      const v = ta.value;
+      const lineStart = v.lastIndexOf("\n", pos - 1) + 1;
+      const lineEndIdx = v.indexOf("\n", pos);
+      const lineEnd = lineEndIdx === -1 ? v.length : lineEndIdx;
+      const currentLine = v.slice(lineStart, lineEnd);
+      if (/^[•\-\*]\s/.test(currentLine)) return;
+      const insert = "• ";
+      ta.value = v.slice(0, lineStart) + insert + v.slice(lineStart);
+      ta.selectionStart = ta.selectionEnd = pos + insert.length;
+      autoSizeTextarea(ta);
+    }
+
+    function renderNotes() {
+      const list = $("notesList");
+      const count = notes.length;
+      $("notesCount").textContent = `${count} ${count === 1 ? "note" : "notes"}`;
+      $("tabNotesCount").textContent = count;
+
+      // Skip rerender if user is mid-edit
+      if (editingNoteId) return;
+
+      list.innerHTML = "";
+
+      if (count === 0) {
+        const empty = document.createElement("div");
+        empty.className = "notes-empty";
+        empty.textContent = "No notes yet. Click + New note to add one.";
+        list.appendChild(empty);
+        return;
+      }
+
+      // Sort by updatedAt desc (fall back to createdAt)
+      const sorted = notes.slice().sort((a, b) => {
+        const ua = tsToDate(a.updatedAt || a.createdAt)?.getTime() || 0;
+        const ub = tsToDate(b.updatedAt || b.createdAt)?.getTime() || 0;
+        return ub - ua;
+      });
+
+      sorted.forEach(n => {
+        const card = document.createElement("div");
+        card.className = "note-card " + noteColorClass(n.id);
+
+        const head = document.createElement("div");
+        head.className = "note-head";
+
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.className = "note-title-input";
+        titleInput.value = n.title || "";
+        titleInput.placeholder = "Untitled";
+        titleInput.title = "Click to rename";
+        titleInput.addEventListener("focus", () => { editingNoteId = n.id; });
+        titleInput.addEventListener("blur", async () => {
+          editingNoteId = null;
+          const v = titleInput.value.trim();
+          if (v && v !== (n.title || "")) await updateNoteTitle(n.id, v);
+          else if (!v) titleInput.value = n.title || "Untitled";
+        });
+        titleInput.addEventListener("keydown", e => {
+          e.stopPropagation();
+          if (e.key === "Enter") { e.preventDefault(); titleInput.blur(); }
+          if (e.key === "Escape") { e.preventDefault(); titleInput.value = n.title || ""; titleInput.blur(); }
+        });
+
+        // Content textarea — declared first so the bullet button can reference it
+        const content = document.createElement("textarea");
+        content.className = "note-content-textarea";
+        content.value = n.content || "";
+        content.placeholder = "Write your note here…";
+        content.title = "Click to edit";
+        content.rows = 1;
+        content.addEventListener("focus", () => { editingNoteId = n.id; });
+        content.addEventListener("input", () => {
+          handleBulletAutoTransform(content);
+          autoSizeTextarea(content);
+        });
+        content.addEventListener("blur", async () => {
+          editingNoteId = null;
+          const v = content.value;
+          if (v !== (n.content || "")) await updateNoteContent(n.id, v);
+        });
+        content.addEventListener("keydown", e => {
+          e.stopPropagation();
+          if (e.key === "Escape") { e.preventDefault(); content.value = n.content || ""; content.blur(); return; }
+          handleBulletEnter(content, e);
+        });
+
+        // Bullet button — inserts "• " at the start of the current line.
+        // mousedown.preventDefault() keeps the textarea focused so the cursor position is preserved.
+        const bulletBtn = document.createElement("button");
+        bulletBtn.type = "button";
+        bulletBtn.className = "note-bullet-btn";
+        bulletBtn.title = "Add bullet at the start of the current line (or just type \"- \", \"* \", or \"• \" to convert)";
+        bulletBtn.innerHTML = '<span class="bullet-glyph">•</span><span class="bullet-label">Bullet</span>';
+        bulletBtn.addEventListener("mousedown", (e) => e.preventDefault());
+        bulletBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          insertBulletAtCursor(content);
+        });
+
+        const del = document.createElement("button");
+        del.className = "icon-btn";
+        del.title = "Delete note";
+        del.innerHTML = "&times;";
+        del.style.opacity = "1";
+        del.addEventListener("click", () => deleteNote(n.id));
+
+        head.appendChild(titleInput);
+        head.appendChild(bulletBtn);
+        head.appendChild(del);
+
+        const meta = document.createElement("div");
+        meta.className = "note-meta";
+        const updated = n.updatedAt || n.createdAt;
+        meta.innerHTML = `<span>Updated ${formatRelative(updated)}</span>`;
+
+        card.appendChild(head);
+        card.appendChild(content);
+        card.appendChild(meta);
+
+        list.appendChild(card);
+
+        // Auto-size after attached to DOM
+        requestAnimationFrame(() => autoSizeTextarea(content));
+      });
+    }
+
+    // ---- Render bookmarks ----
+    function renderBookmarks() {
+      const list = $("bookmarksList");
+      const filterBar = $("bookmarkFilters");
+      const count = bookmarks.length;
+      $("bookmarksHeaderCount").textContent = `${count} ${count === 1 ? "bookmark" : "bookmarks"}`;
+      $("tabBookmarksCount").textContent = count;
+
+      // Build tag filter pills
+      const tags = Array.from(new Set(
+        bookmarks.map(b => (b.tag || "").trim()).filter(Boolean)
+      )).sort();
+      filterBar.innerHTML = "";
+      if (tags.length > 0) {
+        filterBar.style.display = "flex";
+        const allBtn = document.createElement("button");
+        allBtn.type = "button";
+        allBtn.className = "bookmark-filter-pill" + (bookmarkFilterTag === null ? " active" : "");
+        allBtn.textContent = `All (${count})`;
+        allBtn.addEventListener("click", () => { bookmarkFilterTag = null; renderBookmarks(); });
+        filterBar.appendChild(allBtn);
+        tags.forEach(tag => {
+          const n = bookmarks.filter(b => (b.tag || "").trim() === tag).length;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "bookmark-filter-pill" + (bookmarkFilterTag === tag ? " active" : "");
+          btn.textContent = `${tag} (${n})`;
+          btn.addEventListener("click", () => { bookmarkFilterTag = tag; renderBookmarks(); });
+          filterBar.appendChild(btn);
+        });
+      } else {
+        filterBar.style.display = "none";
+        bookmarkFilterTag = null;
+      }
+
+      if (editingBookmarkId) return;
+      list.innerHTML = "";
+
+      if (count === 0) {
+        const empty = document.createElement("div");
+        empty.className = "notes-empty";
+        empty.textContent = "No bookmarks yet. Click + New bookmark to add one.";
+        list.appendChild(empty);
+        return;
+      }
+
+      const filtered = bookmarkFilterTag
+        ? bookmarks.filter(b => (b.tag || "").trim() === bookmarkFilterTag)
+        : bookmarks;
+
+      const sorted = filtered.slice().sort((a, b) => {
+        const ua = tsToDate(a.updatedAt || a.createdAt)?.getTime() || 0;
+        const ub = tsToDate(b.updatedAt || b.createdAt)?.getTime() || 0;
+        return ub - ua;
+      });
+
+      sorted.forEach(b => {
+        const card = document.createElement("div");
+        card.className = "bookmark-card";
+
+        const head = document.createElement("div");
+        head.className = "bookmark-head";
+
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.className = "bookmark-title-input";
+        titleInput.value = b.title || "";
+        titleInput.placeholder = "Untitled";
+        titleInput.title = "Click to rename";
+        titleInput.addEventListener("focus", () => { editingBookmarkId = b.id; });
+        titleInput.addEventListener("blur", async () => {
+          editingBookmarkId = null;
+          const v = titleInput.value.trim();
+          if (v && v !== (b.title || "")) await updateBookmarkField(b.id, "title", v);
+          else if (!v) titleInput.value = b.title || "";
+        });
+        titleInput.addEventListener("keydown", e => {
+          e.stopPropagation();
+          if (e.key === "Enter") { e.preventDefault(); titleInput.blur(); }
+          if (e.key === "Escape") { e.preventDefault(); titleInput.value = b.title || ""; titleInput.blur(); }
+        });
+
+        const del = document.createElement("button");
+        del.className = "icon-btn";
+        del.title = "Delete bookmark";
+        del.innerHTML = "&times;";
+        del.style.opacity = "1";
+        del.addEventListener("click", () => deleteBookmark(b.id));
+
+        head.appendChild(titleInput);
+        head.appendChild(del);
+
+        const link = document.createElement("a");
+        link.className = "bookmark-link";
+        link.href = b.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          <span>${b.url.replace(/^https?:\/\//, "")}</span>
+        `;
+
+        const desc = document.createElement("input");
+        desc.type = "text";
+        desc.className = "bookmark-desc-input";
+        desc.value = b.description || "";
+        desc.placeholder = "Add a one-line description…";
+        desc.addEventListener("focus", () => { editingBookmarkId = b.id; });
+        desc.addEventListener("blur", async () => {
+          editingBookmarkId = null;
+          const v = desc.value.trim();
+          if (v !== (b.description || "")) await updateBookmarkField(b.id, "description", v);
+        });
+        desc.addEventListener("keydown", e => {
+          e.stopPropagation();
+          if (e.key === "Enter") { e.preventDefault(); desc.blur(); }
+          if (e.key === "Escape") { e.preventDefault(); desc.value = b.description || ""; desc.blur(); }
+        });
+
+        const meta = document.createElement("div");
+        meta.className = "bookmark-meta";
+        const left = document.createElement("div");
+        left.style.display = "flex";
+        left.style.gap = "8px";
+        left.style.alignItems = "center";
+        if (b.tag) {
+          const tagEl = document.createElement("span");
+          tagEl.className = "bookmark-tag";
+          tagEl.textContent = b.tag;
+          left.appendChild(tagEl);
+        }
+        const ts = document.createElement("span");
+        ts.textContent = `Saved ${formatRelative(b.createdAt)}`;
+        left.appendChild(ts);
+        meta.appendChild(left);
+
+        card.appendChild(head);
+        card.appendChild(link);
+        card.appendChild(desc);
+        card.appendChild(meta);
+        list.appendChild(card);
+      });
+    }
+
+    // ---- Render reminders ----
+    const REMINDER_ICONS = {
+      birthday: "🎂",
+      anniversary: "💝",
+      other: "📌"
+    };
+    const REMINDER_LABELS = {
+      birthday: "Birthday",
+      anniversary: "Anniversary",
+      other: "Other"
+    };
+
+    function nextOccurrence(month, day, fromDate) {
+      const from = fromDate || new Date();
+      const fy = from.getFullYear();
+      let target = new Date(fy, month - 1, day, 0, 0, 0, 0);
+      const today0 = new Date(fy, from.getMonth(), from.getDate(), 0, 0, 0, 0);
+      if (target.getTime() < today0.getTime()) {
+        target = new Date(fy + 1, month - 1, day, 0, 0, 0, 0);
+      }
+      return target;
+    }
+    function daysUntil(date) {
+      const today0 = new Date();
+      today0.setHours(0, 0, 0, 0);
+      return Math.round((date.getTime() - today0.getTime()) / 86400000);
+    }
+    function formatCountdown(d) {
+      if (d === 0) return "Today!";
+      if (d === 1) return "Tomorrow";
+      if (d < 7) return `In ${d} days`;
+      if (d < 30) {
+        const w = Math.floor(d / 7);
+        return `In ${w} week${w === 1 ? "" : "s"}`;
+      }
+      if (d < 365) {
+        const m = Math.floor(d / 30);
+        return `In ${m} month${m === 1 ? "" : "s"}`;
+      }
+      return `In ${Math.floor(d / 365)} year`;
+    }
+
+    function renderReminders() {
+      const list = $("remindersList");
+      const count = reminders.length;
+      $("remindersHeaderCount").textContent = `${count} ${count === 1 ? "reminder" : "reminders"}`;
+      $("tabRemindersCount").textContent = count;
+
+      list.innerHTML = "";
+
+      if (count === 0) {
+        const empty = document.createElement("div");
+        empty.className = "notes-empty";
+        empty.textContent = "No reminders yet. Click + New reminder to add a birthday or anniversary.";
+        list.appendChild(empty);
+        return;
+      }
+
+      const now = new Date();
+      const enriched = reminders.map(r => {
+        const next = nextOccurrence(r.month, r.day, now);
+        const days = daysUntil(next);
+        return { r, next, days };
+      }).sort((a, b) => a.days - b.days);
+
+      enriched.forEach(({ r, next, days }) => {
+        const card = document.createElement("div");
+        card.className = "reminder-card";
+        if (days === 0) card.classList.add("is-today");
+        else if (days <= 7) card.classList.add("is-soon");
+
+        const iconWrap = document.createElement("div");
+        iconWrap.className = "reminder-icon-wrap";
+        iconWrap.textContent = REMINDER_ICONS[r.type] || REMINDER_ICONS.other;
+
+        const main = document.createElement("div");
+        main.className = "reminder-main";
+
+        const name = document.createElement("div");
+        name.className = "reminder-name";
+        name.textContent = r.name || "(unnamed)";
+
+        const sub = document.createElement("div");
+        sub.className = "reminder-sub";
+
+        const typeBadge = document.createElement("span");
+        typeBadge.className = "reminder-type-badge";
+        typeBadge.textContent = REMINDER_LABELS[r.type] || "Other";
+
+        const dateStr = `${MONTH_NAMES[r.month - 1]} ${r.day}`;
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = dateStr;
+
+        sub.appendChild(typeBadge);
+        sub.appendChild(dateSpan);
+
+        // Age / years
+        if (r.year && r.type === "birthday") {
+          const turning = next.getFullYear() - r.year;
+          const ageSpan = document.createElement("span");
+          ageSpan.textContent = `Turning ${turning}`;
+          sub.appendChild(ageSpan);
+        } else if (r.year && r.type === "anniversary") {
+          const yearsCount = next.getFullYear() - r.year;
+          const ySpan = document.createElement("span");
+          ySpan.textContent = `${yearsCount} year${yearsCount === 1 ? "" : "s"}`;
+          sub.appendChild(ySpan);
+        }
+
+        if (r.note) {
+          const noteSpan = document.createElement("span");
+          noteSpan.style.color = "var(--text-secondary)";
+          noteSpan.textContent = "· " + r.note;
+          sub.appendChild(noteSpan);
+        }
+
+        main.appendChild(name);
+        main.appendChild(sub);
+
+        const countdown = document.createElement("div");
+        countdown.className = "reminder-countdown";
+        const cdLabel = document.createElement("div");
+        cdLabel.textContent = formatCountdown(days);
+        const cdSub = document.createElement("div");
+        cdSub.className = "reminder-days";
+        const dateLabel = next.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+        cdSub.textContent = dateLabel;
+        countdown.appendChild(cdLabel);
+        countdown.appendChild(cdSub);
+
+        const del = document.createElement("button");
+        del.className = "icon-btn";
+        del.title = "Delete reminder";
+        del.innerHTML = "&times;";
+        del.style.opacity = "1";
+        del.addEventListener("click", () => deleteReminder(r.id));
+
+        card.appendChild(iconWrap);
+        card.appendChild(main);
+        card.appendChild(countdown);
+        card.appendChild(del);
+        list.appendChild(card);
+      });
+    }
+
+    // ---- Tab switching ----
+    const TABS = ["tasks", "notes", "bookmarks", "reminders"];
+    const TAB_VIEWS = {
+      tasks: "tasksView",
+      notes: "notesView",
+      bookmarks: "bookmarksView",
+      reminders: "remindersView"
+    };
+    const TAB_BTNS = {
+      tasks: "tabTasksBtn",
+      notes: "tabNotesBtn",
+      bookmarks: "tabBookmarksBtn",
+      reminders: "tabRemindersBtn"
+    };
+    function setActiveTab(tab) {
+      if (!TABS.includes(tab)) tab = "tasks";
+      activeTab = tab;
+      localStorage.setItem(TAB_KEY, tab);
+      TABS.forEach(t => {
+        const view = $(TAB_VIEWS[t]);
+        const btn = $(TAB_BTNS[t]);
+        if (view) view.style.display = (t === tab) ? "block" : "none";
+        if (btn) btn.classList.toggle("active", t === tab);
+      });
+    }
+    function nextTab(direction) {
+      const i = TABS.indexOf(activeTab);
+      const n = (i + direction + TABS.length) % TABS.length;
+      setActiveTab(TABS[n]);
+    }
+
     // ---- CSV Export ----
     function csvEscape(v) {
       const s = String(v ?? "");
@@ -1918,7 +3097,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `tasks-tracker-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `atlas-${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1948,7 +3127,7 @@
         if ("serviceWorker" in navigator) {
           const reg = await navigator.serviceWorker.ready;
           await reg.showNotification(title, {
-            body, icon: "./icon.svg", badge: "./icon.svg", tag: "tasks-tracker"
+            body, icon: "./icon.svg", badge: "./icon.svg", tag: "atlas"
           });
         } else {
           new Notification(title, { body, icon: "./icon.svg" });
@@ -2006,7 +3185,7 @@
       const body = open.length === 0
         ? "All caught up! No open tasks today."
         : `${open.length} open task${open.length === 1 ? "" : "s"}` + (p0 ? ` · ${p0} P0` : "");
-      showNotif("Tasks Tracker — daily", body);
+      showNotif("Atlas — daily", body);
       await updateLastFired("daily");
       scheduleDaily();
     }
@@ -2018,7 +3197,7 @@
         scheduleP0();
         return;
       }
-      showNotif("Tasks Tracker — P0 nudge", `${p0.length} P0 task${p0.length === 1 ? "" : "s"} need attention`);
+      showNotif("Atlas — P0 nudge", `${p0.length} P0 task${p0.length === 1 ? "" : "s"} need attention`);
       await updateLastFired("p0");
       scheduleP0();
     }
@@ -2031,7 +3210,7 @@
       const body = closedThisWeek.length === 0
         ? "Nothing closed this week. Fresh start ahead."
         : `Great week — ${closedThisWeek.length} task${closedThisWeek.length === 1 ? "" : "s"} closed.`;
-      showNotif("Tasks Tracker — weekly recap", body);
+      showNotif("Atlas — weekly recap", body);
       await updateLastFired("weekly");
       scheduleWeekly();
     }
@@ -2131,10 +3310,40 @@
       $("notifWeeklyToggle").checked = !!n.weekly?.enabled;
       $("notifWeeklyDay").value = String(typeof n.weekly?.day === "number" ? n.weekly.day : 0);
       $("notifWeeklyTime").value = n.weekly?.time || "18:00";
+      const c = settings.cleanup || {};
+      $("cleanupRetentionSelect").value = String(c.tasksRetentionDays || 0);
       updateChildToggleStates();
       // Show denied warning
       $("notifPermissionWarning").style.display =
         (notifSupported() && Notification.permission === "denied") ? "block" : "none";
+    }
+
+    async function saveCleanupSettings() {
+      const days = parseInt($("cleanupRetentionSelect").value, 10) || 0;
+      await trackWrite(setDoc(
+        doc(db, "users", uid(), "settings", "main"),
+        { cleanup: { tasksRetentionDays: days || null } },
+        { merge: true }
+      ));
+    }
+
+    async function runAutoCleanup() {
+      const days = settings.cleanup?.tasksRetentionDays;
+      if (!days || days <= 0) return;
+      const cutoff = Date.now() - (days * 86400000);
+      const stale = tasks.filter(t => {
+        if (!isClosed(t)) return false;
+        const closedAt = tsToDate(getClosedAt(t));
+        if (!closedAt) return false;
+        return closedAt.getTime() < cutoff;
+      });
+      if (stale.length === 0) return;
+      try {
+        const batch = writeBatch(db);
+        stale.forEach(t => batch.delete(doc(db, "users", uid(), "tasks", t.id)));
+        await trackWrite(batch.commit());
+        console.log(`Auto-cleanup: deleted ${stale.length} task(s) closed > ${days}d ago`);
+      } catch (e) { console.warn("Auto-cleanup failed", e); }
     }
 
     function updateChildToggleStates() {
@@ -2175,10 +3384,15 @@
       $(id).addEventListener("change", saveNotifSettings);
     });
 
+    $("cleanupRetentionSelect").addEventListener("change", async () => {
+      await saveCleanupSettings();
+      await runAutoCleanup();
+    });
+
     $("testNotifBtn").addEventListener("click", async () => {
       const granted = await requestNotifPermission();
       if (!granted) return;
-      showNotif("Tasks Tracker — test", "Notifications are working. You're all set.");
+      showNotif("Atlas — test", "Notifications are working. You're all set.");
     });
 
     // ---- Wire up: New section ----
@@ -2245,6 +3459,176 @@
       if (e.key === "Enter") submitTpl();
     });
 
+    // ---- Wire up: Tabs ----
+    document.querySelectorAll(".tab-btn[data-tab]").forEach(btn => {
+      btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+    });
+    setActiveTab(activeTab);
+
+    // ---- Wire up: New note ----
+    const noteBar = $("newNoteBar");
+    const noteToggle = $("newNoteToggle");
+    const noteForm = $("newNoteForm");
+    const noteTitle = $("newNoteTitle");
+    const noteContent = $("newNoteContent");
+    const noteAdd = $("addNoteBtn");
+    const noteCancel = $("cancelNoteBtn");
+
+    const openNote = () => {
+      noteBar.classList.add("open");
+      noteForm.classList.add("open");
+      noteTitle.focus();
+    };
+    const closeNote = () => {
+      noteBar.classList.remove("open");
+      noteForm.classList.remove("open");
+      noteTitle.value = ""; noteContent.value = "";
+    };
+    const submitNote = async () => {
+      const t = noteTitle.value.trim();
+      const c = noteContent.value.trim();
+      if (!t && !c) { closeNote(); return; }
+      noteTitle.value = ""; noteContent.value = "";
+      await addNote(t, c);
+      noteTitle.focus();
+    };
+    noteToggle.addEventListener("click", openNote);
+    noteAdd.addEventListener("click", submitNote);
+    noteCancel.addEventListener("click", closeNote);
+    noteTitle.addEventListener("keydown", e => {
+      e.stopPropagation();
+      if (e.key === "Enter") { e.preventDefault(); noteContent.focus(); }
+      if (e.key === "Escape") closeNote();
+    });
+    noteContent.addEventListener("input", () => handleBulletAutoTransform(noteContent));
+    noteContent.addEventListener("keydown", e => {
+      e.stopPropagation();
+      if (e.key === "Escape") closeNote();
+      // Ctrl/Cmd + Enter submits
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submitNote(); return; }
+      // Smart bullet continuation
+      handleBulletEnter(noteContent, e);
+    });
+
+    // ---- Wire up: New bookmark ----
+    const bmBar = $("newBookmarkBar");
+    const bmToggle = $("newBookmarkToggle");
+    const bmForm = $("newBookmarkForm");
+    const bmUrl = $("newBookmarkUrl");
+    const bmTitle = $("newBookmarkTitle");
+    const bmTag = $("newBookmarkTag");
+    const bmDesc = $("newBookmarkDesc");
+
+    const openBookmark = () => {
+      bmBar.classList.add("open"); bmForm.classList.add("open");
+      bmUrl.focus();
+    };
+    const closeBookmark = () => {
+      bmBar.classList.remove("open"); bmForm.classList.remove("open");
+      bmUrl.value = ""; bmTitle.value = ""; bmTag.value = ""; bmDesc.value = "";
+    };
+    const submitBookmark = async () => {
+      const url = bmUrl.value.trim();
+      if (!url) { closeBookmark(); return; }
+      await addBookmark({
+        url,
+        title: bmTitle.value,
+        description: bmDesc.value,
+        tag: bmTag.value
+      });
+      bmUrl.value = ""; bmTitle.value = ""; bmTag.value = ""; bmDesc.value = "";
+      bmUrl.focus();
+    };
+    bmToggle.addEventListener("click", openBookmark);
+    $("addBookmarkBtn").addEventListener("click", submitBookmark);
+    $("cancelBookmarkBtn").addEventListener("click", closeBookmark);
+
+    // Auto-fill title from URL on blur if title is empty
+    bmUrl.addEventListener("blur", () => {
+      if (bmUrl.value.trim() && !bmTitle.value.trim()) {
+        bmTitle.value = deriveTitle(bmUrl.value);
+      }
+    });
+    [bmUrl, bmTitle, bmTag, bmDesc].forEach(inp => {
+      inp.addEventListener("keydown", e => {
+        e.stopPropagation();
+        if (e.key === "Enter") submitBookmark();
+        if (e.key === "Escape") closeBookmark();
+      });
+    });
+
+    // ---- Wire up: New reminder ----
+    const rmBar = $("newReminderBar");
+    const rmToggle = $("newReminderToggle");
+    const rmForm = $("newReminderForm");
+    const rmName = $("newReminderName");
+    const rmMonth = $("newReminderMonth");
+    const rmDay = $("newReminderDay");
+    const rmYear = $("newReminderYear");
+    const rmNote = $("newReminderNote");
+    const rmTypeSelector = $("reminderTypeSelector");
+
+    // Populate month / day dropdowns
+    MONTH_NAMES.forEach((m, i) => {
+      const op = document.createElement("option");
+      op.value = String(i + 1); op.textContent = m;
+      rmMonth.appendChild(op);
+    });
+    for (let d = 1; d <= 31; d++) {
+      const op = document.createElement("option");
+      op.value = String(d); op.textContent = String(d);
+      rmDay.appendChild(op);
+    }
+    // Default to today's date
+    const _today = new Date();
+    rmMonth.value = String(_today.getMonth() + 1);
+    rmDay.value = String(_today.getDate());
+
+    rmTypeSelector.querySelectorAll(".type-option").forEach(btn => {
+      btn.addEventListener("click", () => {
+        rmTypeSelector.querySelectorAll(".type-option").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedReminderType = btn.dataset.rtype;
+      });
+    });
+
+    const openReminder = () => {
+      rmBar.classList.add("open"); rmForm.classList.add("open");
+      rmName.focus();
+    };
+    const closeReminder = () => {
+      rmBar.classList.remove("open"); rmForm.classList.remove("open");
+      rmName.value = ""; rmYear.value = ""; rmNote.value = "";
+      rmMonth.value = String(_today.getMonth() + 1);
+      rmDay.value = String(_today.getDate());
+      selectedReminderType = "birthday";
+      rmTypeSelector.querySelectorAll(".type-option").forEach(b => b.classList.remove("active"));
+      rmTypeSelector.querySelector('[data-rtype="birthday"]').classList.add("active");
+    };
+    const submitReminder = async () => {
+      const name = rmName.value.trim();
+      if (!name) { rmName.focus(); return; }
+      await addReminder({
+        name,
+        type: selectedReminderType,
+        month: rmMonth.value,
+        day: rmDay.value,
+        year: rmYear.value,
+        note: rmNote.value
+      });
+      closeReminder();
+    };
+    rmToggle.addEventListener("click", openReminder);
+    $("addReminderBtn").addEventListener("click", submitReminder);
+    $("cancelReminderBtn").addEventListener("click", closeReminder);
+    [rmName, rmYear, rmNote].forEach(inp => {
+      inp.addEventListener("keydown", e => {
+        e.stopPropagation();
+        if (e.key === "Enter") submitReminder();
+        if (e.key === "Escape") closeReminder();
+      });
+    });
+
     // ---- Theme toggle ----
     $("themeToggle").addEventListener("click", () => {
       document.body.classList.toggle("theme-light");
@@ -2276,15 +3660,27 @@
 
       if (e.key === "Escape") {
         if (modal.classList.contains("open")) { modal.classList.remove("open"); return; }
+        if (notifModal.classList.contains("open")) { notifModal.classList.remove("open"); return; }
         if (sForm.classList.contains("open")) { closeSec(); return; }
+        if (noteForm.classList.contains("open")) { closeNote(); return; }
+        if (bmForm.classList.contains("open")) { closeBookmark(); return; }
+        if (rmForm.classList.contains("open")) { closeReminder(); return; }
       }
 
       if (isTyping) return;
 
       switch (e.key) {
         case "n": case "N":
-          openSec(); e.preventDefault(); break;
+          if (activeTab === "notes") openNote();
+          else if (activeTab === "bookmarks") openBookmark();
+          else if (activeTab === "reminders") openReminder();
+          else openSec();
+          e.preventDefault(); break;
+        case "t": case "T":
+          nextTab(e.shiftKey ? -1 : 1);
+          e.preventDefault(); break;
         case "r": case "R":
+          if (activeTab !== "tasks") setActiveTab("tasks");
           tPanel.classList.toggle("open");
           if (tPanel.classList.contains("open")) tInput.focus();
           e.preventDefault(); break;
