@@ -1,9 +1,9 @@
-// Tasks Tracker — service worker
+// Atlas — service worker
 // Caches the app shell so the page can open offline.
 // Lets Firebase / Google APIs handle their own caching (Firestore has built-in offline persistence).
 // Also handles notification clicks — opens the app or focuses an existing tab.
 
-const CACHE = "tt-v3";
+const CACHE = "atlas-v1";
 const ASSETS = ["./", "./todo.html", "./manifest.json", "./icon.svg"];
 
 self.addEventListener("install", (e) => {
