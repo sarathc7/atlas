@@ -1,0 +1,19 @@
+{
+  "name": "Tasks Tracker",
+  "short_name": "Tasks",
+  "description": "Personal task tracker with sections, priorities, and recurring tasks",
+  "start_url": "./todo.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#09090b",
+  "background_color": "#09090b",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
