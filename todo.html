@@ -480,6 +480,14 @@
   }
   .section-clear-btn:hover { color: var(--danger); background: var(--danger-soft); }
 
+  .section-sort-btn {
+    background: none; border: none; color: var(--text-secondary);
+    font-size: 11px; cursor: pointer; padding: 4px 8px;
+    border-radius: 5px; font-family: inherit; transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .section-sort-btn:hover { color: var(--accent); background: var(--accent-soft); }
+
   .icon-btn {
     background: none; border: none; color: var(--text-muted); cursor: pointer;
     padding: 4px 7px; border-radius: 5px;
@@ -1048,7 +1056,7 @@
       });
       unsubTemplates = onSnapshot(collection(db, "users", uid, "templates"), snap => {
         templates = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
+          .sort((a, b) => getOrder(a) - getOrder(b));
         renderTemplates();
       });
     }
@@ -1283,9 +1291,11 @@
     // ---- Mutations: Templates ----
     async function addTemplate(text, priority, frequency) {
       const t = (text || "").trim(); if (!t) return;
+      const maxOrder = templates.length === 0 ? 0 : Math.max(...templates.map(getOrder));
       await trackWrite(addDoc(collection(db, "users", uid(), "templates"), {
         text: t, priority: priority || "P2", frequency: frequency || "daily",
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        order: maxOrder + 1
       }));
     }
     async function deleteTemplate(id) {
@@ -1296,6 +1306,44 @@
     }
     async function setTemplateFrequency(id, f) {
       await trackWrite(updateDoc(doc(db, "users", uid(), "templates", id), { frequency: f }));
+    }
+    async function moveTemplateUp(t) {
+      const sorted = templates.slice().sort((a, b) => getOrder(a) - getOrder(b));
+      const idx = sorted.findIndex(x => x.id === t.id);
+      if (idx <= 0) return;
+      await swapTemplateOrders(t, sorted[idx - 1]);
+    }
+    async function moveTemplateDown(t) {
+      const sorted = templates.slice().sort((a, b) => getOrder(a) - getOrder(b));
+      const idx = sorted.findIndex(x => x.id === t.id);
+      if (idx < 0 || idx >= sorted.length - 1) return;
+      await swapTemplateOrders(t, sorted[idx + 1]);
+    }
+    async function swapTemplateOrders(a, b) {
+      const oa = getOrder(a);
+      const ob = getOrder(b);
+      const batch = writeBatch(db);
+      batch.update(doc(db, "users", uid(), "templates", a.id), { order: ob });
+      batch.update(doc(db, "users", uid(), "templates", b.id), { order: oa });
+      await trackWrite(batch.commit());
+    }
+
+    // ---- Sort a section's open tasks by priority ----
+    async function sortSectionByPriority(sectionId) {
+      const peers = tasks
+        .filter(x => x.sectionId === sectionId && getStatus(x) === "open")
+        .sort((a, b) => {
+          const pa = PRIORITIES.indexOf(a.priority || "P2");
+          const pb = PRIORITIES.indexOf(b.priority || "P2");
+          if (pa !== pb) return pa - pb;
+          return getOrder(a) - getOrder(b);
+        });
+      if (peers.length < 2) return;
+      const batch = writeBatch(db);
+      peers.forEach((t, i) => {
+        batch.update(doc(db, "users", uid(), "tasks", t.id), { order: i + 1 });
+      });
+      await trackWrite(batch.commit());
     }
 
     // ---- Render ----
@@ -1465,6 +1513,17 @@
       }
 
       if (mode === "active") {
+        const openCount = sectionTasks.filter(t => getStatus(t) === "open").length;
+        if (openCount > 1) {
+          const sortBtn = document.createElement("button");
+          sortBtn.type = "button";
+          sortBtn.className = "section-sort-btn";
+          sortBtn.textContent = "Sort by priority";
+          sortBtn.title = "Reorder open tasks by priority (P0 first)";
+          sortBtn.addEventListener("click", () => sortSectionByPriority(section.id));
+          head.appendChild(sortBtn);
+        }
+
         const delBtn = document.createElement("button");
         delBtn.className = "icon-btn";
         delBtn.title = "Delete section";
@@ -1651,6 +1710,20 @@
           setTemplateFrequency(t.id, nextFrequency(t.frequency))
         );
 
+        const upBtn = document.createElement("button");
+        upBtn.type = "button";
+        upBtn.className = "icon-btn move-btn";
+        upBtn.title = "Move up";
+        upBtn.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8 L6 4 L9 8"/></svg>';
+        upBtn.addEventListener("click", () => moveTemplateUp(t));
+
+        const downBtn = document.createElement("button");
+        downBtn.type = "button";
+        downBtn.className = "icon-btn move-btn";
+        downBtn.title = "Move down";
+        downBtn.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4 L6 8 L9 4"/></svg>';
+        downBtn.addEventListener("click", () => moveTemplateDown(t));
+
         const del = document.createElement("button");
         del.className = "icon-btn";
         del.title = "Delete recurring task";
@@ -1661,6 +1734,8 @@
         li.appendChild(lastSpan);
         li.appendChild(pill);
         li.appendChild(freq);
+        li.appendChild(upBtn);
+        li.appendChild(downBtn);
         li.appendChild(del);
         list.appendChild(li);
       });
