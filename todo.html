@@ -15,11 +15,6 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg" />
 <link rel="apple-touch-icon" href="icon.svg" />
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
   :root {
     /* Surfaces */
@@ -140,18 +135,15 @@
   html, body { height: 100%; }
 
   body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv11", "ss01";
-    font-optical-sizing: auto;
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", Tahoma, Verdana, sans-serif;
     background: var(--bg);
     background-image:
       radial-gradient(ellipse 70% 60% at 15% 0%, rgba(129, 140, 248, 0.10), transparent 60%),
       radial-gradient(ellipse 70% 60% at 85% 100%, rgba(167, 139, 250, 0.07), transparent 60%);
     background-attachment: fixed;
     color: var(--text);
-    font-size: 15px;
+    font-size: 13px;
     line-height: 1.5;
-    letter-spacing: -0.005em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -173,10 +165,9 @@
     box-shadow: 0 0 20px rgba(129, 140, 248, 0.4);
   }
   .auth-card h1 {
-    font-size: 24px; font-weight: 800; letter-spacing: -0.024em; margin-bottom: 6px;
+    font-size: 20px; font-weight: 700; letter-spacing: -0.018em; margin-bottom: 6px;
     background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    font-feature-settings: "cv02", "cv11", "ss01";
   }
   .auth-card p { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
   .google-btn {
@@ -213,13 +204,12 @@
   }
 
   .title-block h1.brand-title {
-    font-size: 28px; font-weight: 800; letter-spacing: -0.028em;
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
     background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    line-height: 1.1;
-    font-feature-settings: "cv02", "cv11", "ss01";
+    line-height: 1.15;
   }
-  .title-block .date { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+  .title-block .date { color: var(--text-secondary); font-size: 12px; margin-top: 3px; }
 
   .user-block { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
@@ -267,8 +257,8 @@
   .menu-item {
     display: block; width: 100%; text-align: left;
     background: none; border: none; color: var(--text);
-    padding: 8px 10px; border-radius: 5px;
-    font-size: 13px; cursor: pointer; font-family: inherit;
+    padding: 7px 10px; border-radius: 5px;
+    font-size: 12px; cursor: pointer; font-family: inherit;
   }
   .menu-item:hover { background: var(--accent-soft); color: var(--accent-hover); }
   .menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
@@ -291,7 +281,7 @@
     letter-spacing: 0.06em; color: var(--text-muted);
   }
   .stat-value {
-    font-size: 22px; font-weight: 700; color: var(--text);
+    font-size: 19px; font-weight: 700; color: var(--text);
     font-variant-numeric: tabular-nums; margin-top: 2px; line-height: 1;
   }
   .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
@@ -302,14 +292,14 @@
   /* Generic input/button */
   .input-clean {
     padding: 9px 12px; border: 1px solid var(--border-strong); border-radius: 7px;
-    font-size: 14px; font-family: inherit; color: var(--text); outline: none;
+    font-size: 13px; font-family: inherit; color: var(--text); outline: none;
     background: var(--surface-elevated);
     transition: border-color 0.15s, box-shadow 0.15s;
   }
   .input-clean:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
   .btn {
-    padding: 9px 16px; border-radius: 7px; font-size: 13px; font-weight: 500;
+    padding: 8px 14px; border-radius: 7px; font-size: 12px; font-weight: 700;
     cursor: pointer; border: 1px solid transparent; font-family: inherit;
     transition: all 0.15s; line-height: 1.2;
   }
@@ -456,10 +446,10 @@
   .section-card.is-done .section-marker { background: var(--success); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
 
   .section-name {
-    flex: 1; font-size: 15px; font-weight: 600; color: var(--text);
+    flex: 1; font-size: 13px; font-weight: 700; color: var(--text);
     background: transparent; border: 1px solid transparent;
     padding: 5px 8px; margin-left: -8px; border-radius: 5px; outline: none;
-    transition: all 0.15s; font-family: inherit; letter-spacing: -0.005em;
+    transition: all 0.15s; font-family: inherit;
   }
   .section-name:hover { background: var(--accent-soft); }
   .section-name:focus { background: var(--surface); border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -493,12 +483,23 @@
   .icon-btn {
     background: none; border: none; color: var(--text-muted); cursor: pointer;
     padding: 4px 7px; border-radius: 5px;
-    font-size: 16px; line-height: 1; transition: all 0.15s; opacity: 0;
+    font-size: 15px; line-height: 1; transition: all 0.15s; opacity: 0;
   }
   .section-head:hover .icon-btn,
   .task-item:hover .icon-btn,
   .template-item .icon-btn { opacity: 1; }
   .icon-btn:hover { color: var(--danger); background: var(--danger-soft); }
+
+  /* Touch devices: always show icon buttons */
+  @media (hover: none) {
+    .icon-btn { opacity: 0.55; }
+  }
+
+  /* Move (reorder) buttons — accent on hover, not danger */
+  .move-btn { color: var(--text-muted); }
+  .move-btn:hover { color: var(--accent); background: var(--accent-soft); }
+  .move-btn svg { width: 11px; height: 11px; display: block; }
+  .move-btn:disabled, .move-btn[aria-disabled="true"] { opacity: 0.25 !important; cursor: not-allowed; }
 
   /* Task list */
   .task-list { list-style: none; }
@@ -548,7 +549,7 @@
 
   /* Inline editable task text */
   .task-text-input {
-    flex: 1; font-size: 14px; color: var(--text);
+    flex: 1; font-size: 13px; color: var(--text);
     background: transparent; border: 1px solid transparent;
     padding: 4px 6px; margin: -4px -6px;
     border-radius: 5px; outline: none;
@@ -689,18 +690,22 @@
 
   /* Mobile */
   @media (max-width: 600px) {
-    body { padding: 0; }
+    body { padding: 0; font-size: 13px; }
     .container { border-radius: 0; border-left: none; border-right: none; border-top: none; min-height: 100vh; }
-    header { padding: 18px 20px; flex-wrap: wrap; }
-    .new-section-bar, .pane, footer, .templates-toggle { padding-left: 20px; padding-right: 20px; }
-    .templates-content { padding-left: 20px; padding-right: 20px; }
-    .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 12px 20px; gap: 8px; }
-    .title-block h1.brand-title { font-size: 22px; }
-    .pane { padding-top: 18px; padding-bottom: 18px; }
+    header { padding: 16px 18px; flex-wrap: wrap; }
+    .new-section-bar, .pane, footer, .templates-toggle { padding-left: 18px; padding-right: 18px; }
+    .templates-content { padding-left: 18px; padding-right: 18px; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); padding: 12px 18px; gap: 8px; }
+    .stat-value { font-size: 17px; }
+    .title-block h1.brand-title { font-size: 18px; letter-spacing: -0.018em; }
+    .title-block .date { font-size: 11px; }
+    .pane { padding-top: 16px; padding-bottom: 16px; }
     .add-task-form .input-clean { min-width: 0; flex-basis: 100%; }
     .new-section-form .input-clean { min-width: 0; flex-basis: 100%; }
     .auth-card { margin: 20px; padding: 32px 24px; }
-    .section-card { padding: 14px; }
+    .section-card { padding: 13px; }
+    .task-text-input { font-size: 13px; }
+    .section-name { font-size: 13px; }
   }
 
   /* PWA standalone tweaks */
@@ -1126,6 +1131,10 @@
     function isInSameMonth(d1, d2) {
       return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth();
     }
+    function getOrder(t) {
+      if (typeof t.order === "number") return t.order;
+      return tsToDate(t.createdAt)?.getTime() ?? 0;
+    }
     function getLastAppliedDate(templateId) {
       const fromTpl = tasks.filter(t => t.fromTemplate === templateId);
       if (fromTpl.length === 0) return null;
@@ -1164,13 +1173,14 @@
         });
         if (eligible.length > 0) {
           const batch = writeBatch(db);
-          eligible.forEach(t => {
+          eligible.forEach((t, i) => {
             const tref = doc(collection(db, "users", uid(), "tasks"));
             batch.set(tref, {
               sectionId: sectionRef.id,
               text: t.text, priority: t.priority || "P2",
               status: "open", createdAt: serverTimestamp(),
-              closedAt: null, fromTemplate: t.id
+              closedAt: null, fromTemplate: t.id,
+              order: i + 1
             });
           });
           await trackWrite(batch.commit());
@@ -1197,10 +1207,37 @@
     // ---- Mutations: Tasks ----
     async function addTask(sectionId, text, priority) {
       const t = (text || "").trim(); if (!t) return;
+      const peers = tasks.filter(x => x.sectionId === sectionId);
+      const maxOrder = peers.length === 0 ? 0 : Math.max(...peers.map(getOrder));
       await trackWrite(addDoc(collection(db, "users", uid(), "tasks"), {
         sectionId, text: t, priority: priority || "P2",
-        status: "open", createdAt: serverTimestamp(), closedAt: null
+        status: "open", createdAt: serverTimestamp(), closedAt: null,
+        order: maxOrder + 1
       }));
+    }
+    async function moveTaskUp(t) {
+      const peers = tasks
+        .filter(x => x.sectionId === t.sectionId && getStatus(x) === "open")
+        .sort((a, b) => getOrder(a) - getOrder(b));
+      const idx = peers.findIndex(x => x.id === t.id);
+      if (idx <= 0) return;
+      await swapTaskOrders(t, peers[idx - 1]);
+    }
+    async function moveTaskDown(t) {
+      const peers = tasks
+        .filter(x => x.sectionId === t.sectionId && getStatus(x) === "open")
+        .sort((a, b) => getOrder(a) - getOrder(b));
+      const idx = peers.findIndex(x => x.id === t.id);
+      if (idx < 0 || idx >= peers.length - 1) return;
+      await swapTaskOrders(t, peers[idx + 1]);
+    }
+    async function swapTaskOrders(a, b) {
+      const oa = getOrder(a);
+      const ob = getOrder(b);
+      const batch = writeBatch(db);
+      batch.update(doc(db, "users", uid(), "tasks", a.id), { order: ob });
+      batch.update(doc(db, "users", uid(), "tasks", b.id), { order: oa });
+      await trackWrite(batch.commit());
     }
     async function setTaskStatus(id, newStatus) {
       const t = tasks.find(t => t.id === id); if (!t) return;
@@ -1347,6 +1384,26 @@
       }
       li.appendChild(meta);
 
+      // Reorder buttons (only for active/open tasks)
+      if (status === "open") {
+        const upBtn = document.createElement("button");
+        upBtn.type = "button";
+        upBtn.className = "icon-btn move-btn";
+        upBtn.title = "Move up";
+        upBtn.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8 L6 4 L9 8"/></svg>';
+        upBtn.addEventListener("click", e => { e.stopPropagation(); moveTaskUp(t); });
+
+        const downBtn = document.createElement("button");
+        downBtn.type = "button";
+        downBtn.className = "icon-btn move-btn";
+        downBtn.title = "Move down";
+        downBtn.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4 L6 8 L9 4"/></svg>';
+        downBtn.addEventListener("click", e => { e.stopPropagation(); moveTaskDown(t); });
+
+        li.appendChild(upBtn);
+        li.appendChild(downBtn);
+      }
+
       const del = document.createElement("button");
       del.className = "icon-btn";
       del.title = "Delete task";
@@ -1431,10 +1488,8 @@
           if (mode === "done") {
             return (tsToDate(getClosedAt(b))?.getTime() || 0) - (tsToDate(getClosedAt(a))?.getTime() || 0);
           }
-          const pa = PRIORITIES.indexOf(a.priority || "P2");
-          const pb = PRIORITIES.indexOf(b.priority || "P2");
-          if (pa !== pb) return pa - pb;
-          return (tsToDate(a.createdAt)?.getTime() || 0) - (tsToDate(b.createdAt)?.getTime() || 0);
+          // Active: manual order (with createdAt fallback for older tasks)
+          return getOrder(a) - getOrder(b);
         });
         sorted.forEach(t => list.appendChild(makeTaskNode(t)));
       }
