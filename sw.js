@@ -1,8 +1,9 @@
 // Tasks Tracker — service worker
 // Caches the app shell so the page can open offline.
 // Lets Firebase / Google APIs handle their own caching (Firestore has built-in offline persistence).
+// Also handles notification clicks — opens the app or focuses an existing tab.
 
-const CACHE = "tt-v2";
+const CACHE = "tt-v3";
 const ASSETS = ["./", "./todo.html", "./manifest.json", "./icon.svg"];
 
 self.addEventListener("install", (e) => {
@@ -18,6 +19,19 @@ self.addEventListener("activate", (e) => {
     caches.keys()
       .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
+  );
+});
+
+// Notification click: focus existing window or open the app
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((wins) => {
+      for (const w of wins) {
+        if (w.url.includes("todo.html") && "focus" in w) return w.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow("./todo.html");
+    })
   );
 });
 
