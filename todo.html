@@ -663,6 +663,54 @@
     border-radius: 3px; font-size: 12px; color: var(--warning);
   }
 
+  /* Toggle switch */
+  .toggle-switch {
+    position: relative; display: inline-block;
+    width: 36px; height: 20px; flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0; cursor: pointer;
+    background-color: var(--border-strong);
+    transition: 0.2s; border-radius: 20px;
+  }
+  .toggle-slider:before {
+    content: ""; position: absolute;
+    height: 14px; width: 14px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: 0.2s; border-radius: 50%;
+  }
+  .toggle-switch input:checked + .toggle-slider { background-color: var(--accent); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(16px); }
+  .toggle-switch input:disabled + .toggle-slider { opacity: 0.4; cursor: not-allowed; }
+
+  /* Notification settings modal layout */
+  .notif-section { display: flex; flex-direction: column; gap: 14px; }
+  .notif-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .notif-label { flex: 1; min-width: 130px; }
+  .notif-label .notif-title { font-size: 12px; font-weight: 700; color: var(--text); }
+  .notif-label .notif-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .notif-divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .notif-info {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 6px;
+    font-size: 11px; color: var(--text-secondary); line-height: 1.5;
+  }
+  .notif-warning {
+    background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.3);
+    border-left: 3px solid var(--warning); padding: 10px 12px; border-radius: 6px;
+    font-size: 11px; color: var(--warning); line-height: 1.5;
+  }
+  .time-input, .day-select {
+    padding: 6px 8px; border: 1px solid var(--border-strong);
+    border-radius: 5px; background: var(--surface-elevated);
+    color: var(--text); font-family: inherit; font-size: 12px;
+    outline: none; flex-shrink: 0;
+  }
+  .time-input:focus, .day-select:focus { border-color: var(--accent); }
+  .day-select { cursor: pointer; }
+
   /* Modal */
   .modal-backdrop {
     position: fixed; inset: 0;
@@ -775,6 +823,7 @@
             <div class="email" id="menuEmail"></div>
           </div>
           <button class="menu-item" id="exportCsvBtn">Export tasks to CSV</button>
+          <button class="menu-item" id="notifSettingsBtn">Notification settings</button>
           <button class="menu-item" id="shortcutsBtn">Keyboard shortcuts</button>
           <div class="menu-divider"></div>
           <button class="menu-item" id="signOutBtn">Sign out</button>
@@ -892,6 +941,91 @@
   <footer>Synced via Firebase · <span id="footerEmail"></span></footer>
 </div>
 
+<!-- Notification settings modal -->
+<div class="modal-backdrop" id="notifModalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Notification settings</h2>
+      <button class="icon-btn" id="closeNotifModalBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="notif-section">
+        <div class="notif-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifMasterToggle">
+            <span class="toggle-slider"></span>
+          </label>
+          <div class="notif-label">
+            <div class="notif-title">Enable notifications</div>
+            <div class="notif-sub">Allow browser to show reminders</div>
+          </div>
+        </div>
+
+        <div id="notifPermissionWarning" class="notif-warning" style="display:none;">
+          Notifications are blocked in your browser. Enable them via the lock icon in the address bar, then come back.
+        </div>
+
+        <div class="notif-divider"></div>
+
+        <div class="notif-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifDailyToggle" disabled>
+            <span class="toggle-slider"></span>
+          </label>
+          <div class="notif-label">
+            <div class="notif-title">Daily reminder</div>
+            <div class="notif-sub">Open task summary, every day</div>
+          </div>
+          <input type="time" id="notifDailyTime" class="time-input" value="09:00">
+        </div>
+
+        <div class="notif-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifP0Toggle" disabled>
+            <span class="toggle-slider"></span>
+          </label>
+          <div class="notif-label">
+            <div class="notif-title">P0 nudge</div>
+            <div class="notif-sub">Daily, only if you have open P0 tasks</div>
+          </div>
+          <input type="time" id="notifP0Time" class="time-input" value="09:00">
+        </div>
+
+        <div class="notif-row">
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifWeeklyToggle" disabled>
+            <span class="toggle-slider"></span>
+          </label>
+          <div class="notif-label">
+            <div class="notif-title">Weekly recap</div>
+            <div class="notif-sub">Summary of tasks closed this week</div>
+          </div>
+          <select id="notifWeeklyDay" class="day-select">
+            <option value="0">Sun</option>
+            <option value="1">Mon</option>
+            <option value="2">Tue</option>
+            <option value="3">Wed</option>
+            <option value="4">Thu</option>
+            <option value="5">Fri</option>
+            <option value="6">Sat</option>
+          </select>
+          <input type="time" id="notifWeeklyTime" class="time-input" value="18:00">
+        </div>
+
+        <div class="notif-divider"></div>
+
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn btn-ghost" id="testNotifBtn" type="button">Send test notification</button>
+        </div>
+
+        <div class="notif-info">
+          <strong>How this works:</strong> Reminders fire while the app is installed and running in the background. Install to your home screen for best reliability. If your phone fully closes the app for hours, scheduled reminders may not fire — open the app once a day to keep them active.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Keyboard shortcuts modal -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
@@ -917,7 +1051,7 @@
   } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
   import {
     initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-    collection, doc, addDoc, updateDoc, deleteDoc,
+    collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
     onSnapshot, writeBatch, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
@@ -961,12 +1095,15 @@
     let unsubSections = null;
     let unsubTasks = null;
     let unsubTemplates = null;
+    let unsubSettings = null;
     let sections = [];
     let tasks = [];
     let templates = [];
+    let settings = { notifications: {} };
     let pendingWrites = 0;
     let selectedSectionType = "general";
-    let editingTaskId = null; // tracks which task text is being edited
+    let editingTaskId = null;
+    let notifTimers = [];
 
     $("todayDate").textContent = new Date().toLocaleDateString(undefined, {
       weekday: "long", year: "numeric", month: "long", day: "numeric"
@@ -995,6 +1132,8 @@
         if (unsubSections) unsubSections();
         if (unsubTasks) unsubTasks();
         if (unsubTemplates) unsubTemplates();
+        if (unsubSettings) unsubSettings();
+        clearNotifTimers();
         showAuth();
       }
     });
@@ -1058,6 +1197,12 @@
         templates = snap.docs.map(d => ({ id: d.id, ...d.data() }))
           .sort((a, b) => getOrder(a) - getOrder(b));
         renderTemplates();
+      });
+      unsubSettings = onSnapshot(doc(db, "users", uid, "settings", "main"), snap => {
+        settings = snap.exists() ? snap.data() : { notifications: {} };
+        if (!settings.notifications) settings.notifications = {};
+        applySettingsToUI();
+        scheduleAllNotifications();
       });
     }
 
@@ -1779,6 +1924,262 @@
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
+
+    // ---- Notifications ----
+    function notifSupported() { return typeof Notification !== "undefined"; }
+
+    async function requestNotifPermission() {
+      if (!notifSupported()) {
+        alert("Notifications are not supported in this browser.");
+        return false;
+      }
+      if (Notification.permission === "granted") return true;
+      if (Notification.permission === "denied") {
+        $("notifPermissionWarning").style.display = "block";
+        return false;
+      }
+      const result = await Notification.requestPermission();
+      return result === "granted";
+    }
+
+    async function showNotif(title, body) {
+      if (!notifSupported() || Notification.permission !== "granted") return;
+      try {
+        if ("serviceWorker" in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          await reg.showNotification(title, {
+            body, icon: "./icon.svg", badge: "./icon.svg", tag: "tasks-tracker"
+          });
+        } else {
+          new Notification(title, { body, icon: "./icon.svg" });
+        }
+      } catch (e) { console.warn("Notification show failed", e); }
+    }
+
+    function clearNotifTimers() {
+      notifTimers.forEach(id => clearTimeout(id));
+      notifTimers = [];
+    }
+
+    function todayAt(timeStr) {
+      const [h, m] = (timeStr || "09:00").split(":").map(Number);
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+    }
+
+    function nextDailyTime(timeStr) {
+      const target = todayAt(timeStr);
+      if (target <= new Date()) target.setDate(target.getDate() + 1);
+      return target;
+    }
+
+    function nextWeeklyTime(dayOfWeek, timeStr) {
+      const target = todayAt(timeStr);
+      const now = new Date();
+      let daysUntil = (dayOfWeek - now.getDay() + 7) % 7;
+      if (daysUntil === 0 && target <= now) daysUntil = 7;
+      target.setDate(target.getDate() + daysUntil);
+      return target;
+    }
+
+    function isSameDay(a, b) {
+      return a && b && a.toDateString() === b.toDateString();
+    }
+    function isSameWeekFn(a, b) {
+      if (!a || !b) return false;
+      return startOfWeek(a).getTime() === startOfWeek(b).getTime();
+    }
+
+    async function updateLastFired(key) {
+      try {
+        await trackWrite(setDoc(
+          doc(db, "users", uid(), "settings", "main"),
+          { notifications: { lastFired: { [key]: serverTimestamp() } } },
+          { merge: true }
+        ));
+      } catch (e) { console.warn("update lastFired failed", e); }
+    }
+
+    async function fireDaily() {
+      const open = tasks.filter(t => getStatus(t) === "open");
+      const p0 = open.filter(t => (t.priority || "P2") === "P0").length;
+      const body = open.length === 0
+        ? "All caught up! No open tasks today."
+        : `${open.length} open task${open.length === 1 ? "" : "s"}` + (p0 ? ` · ${p0} P0` : "");
+      showNotif("Tasks Tracker — daily", body);
+      await updateLastFired("daily");
+      scheduleDaily();
+    }
+    async function fireP0() {
+      const p0 = tasks.filter(t => getStatus(t) === "open" && (t.priority || "P2") === "P0");
+      if (p0.length === 0) {
+        // No P0 tasks, skip silently but mark as fired so we don't re-check
+        await updateLastFired("p0");
+        scheduleP0();
+        return;
+      }
+      showNotif("Tasks Tracker — P0 nudge", `${p0.length} P0 task${p0.length === 1 ? "" : "s"} need attention`);
+      await updateLastFired("p0");
+      scheduleP0();
+    }
+    async function fireWeekly() {
+      const closedThisWeek = tasks.filter(t => {
+        if (!isClosed(t)) return false;
+        const ca = tsToDate(getClosedAt(t));
+        return ca && isSameWeekFn(ca, new Date());
+      });
+      const body = closedThisWeek.length === 0
+        ? "Nothing closed this week. Fresh start ahead."
+        : `Great week — ${closedThisWeek.length} task${closedThisWeek.length === 1 ? "" : "s"} closed.`;
+      showNotif("Tasks Tracker — weekly recap", body);
+      await updateLastFired("weekly");
+      scheduleWeekly();
+    }
+
+    function scheduleDaily() {
+      const n = settings.notifications || {};
+      if (!n.enabled || !n.daily?.enabled) return;
+      const time = n.daily.time || "09:00";
+      const lastFired = tsToDate(n.lastFired?.daily);
+      const now = new Date();
+      const todayTrigger = todayAt(time);
+      // Catch-up: if we're past today's trigger and haven't fired today
+      if (now >= todayTrigger && !isSameDay(lastFired, now)) {
+        fireDaily();
+        return;
+      }
+      const next = nextDailyTime(time);
+      const delay = Math.max(0, next.getTime() - Date.now());
+      if (delay <= 2147483647) notifTimers.push(setTimeout(fireDaily, delay));
+    }
+    function scheduleP0() {
+      const n = settings.notifications || {};
+      if (!n.enabled || !n.p0?.enabled) return;
+      const time = n.p0.time || "09:00";
+      const lastFired = tsToDate(n.lastFired?.p0);
+      const now = new Date();
+      const todayTrigger = todayAt(time);
+      if (now >= todayTrigger && !isSameDay(lastFired, now)) {
+        fireP0();
+        return;
+      }
+      const next = nextDailyTime(time);
+      const delay = Math.max(0, next.getTime() - Date.now());
+      if (delay <= 2147483647) notifTimers.push(setTimeout(fireP0, delay));
+    }
+    function scheduleWeekly() {
+      const n = settings.notifications || {};
+      if (!n.enabled || !n.weekly?.enabled) return;
+      const day = typeof n.weekly.day === "number" ? n.weekly.day : 0;
+      const time = n.weekly.time || "18:00";
+      const lastFired = tsToDate(n.lastFired?.weekly);
+      const now = new Date();
+      // If past this week's trigger and not yet fired this week, catch up
+      const thisWeekTarget = todayAt(time);
+      const daysFromTodayToTarget = (day - now.getDay() + 7) % 7;
+      thisWeekTarget.setDate(thisWeekTarget.getDate() + daysFromTodayToTarget);
+      if (now >= thisWeekTarget && !isSameWeekFn(lastFired, now)) {
+        fireWeekly();
+        return;
+      }
+      const next = nextWeeklyTime(day, time);
+      const delay = Math.max(0, next.getTime() - Date.now());
+      if (delay <= 2147483647) notifTimers.push(setTimeout(fireWeekly, delay));
+    }
+
+    function scheduleAllNotifications() {
+      clearNotifTimers();
+      const n = settings.notifications || {};
+      if (!n.enabled) return;
+      if (!notifSupported() || Notification.permission !== "granted") return;
+      scheduleDaily();
+      scheduleP0();
+      scheduleWeekly();
+    }
+
+    async function saveNotifSettings() {
+      const newPrefs = {
+        enabled: $("notifMasterToggle").checked,
+        daily: {
+          enabled: $("notifDailyToggle").checked,
+          time: $("notifDailyTime").value || "09:00"
+        },
+        p0: {
+          enabled: $("notifP0Toggle").checked,
+          time: $("notifP0Time").value || "09:00"
+        },
+        weekly: {
+          enabled: $("notifWeeklyToggle").checked,
+          day: parseInt($("notifWeeklyDay").value, 10) || 0,
+          time: $("notifWeeklyTime").value || "18:00"
+        }
+      };
+      await trackWrite(setDoc(
+        doc(db, "users", uid(), "settings", "main"),
+        { notifications: newPrefs },
+        { merge: true }
+      ));
+    }
+
+    function applySettingsToUI() {
+      const n = settings.notifications || {};
+      $("notifMasterToggle").checked = !!n.enabled && Notification.permission === "granted";
+      $("notifDailyToggle").checked = !!n.daily?.enabled;
+      $("notifDailyTime").value = n.daily?.time || "09:00";
+      $("notifP0Toggle").checked = !!n.p0?.enabled;
+      $("notifP0Time").value = n.p0?.time || "09:00";
+      $("notifWeeklyToggle").checked = !!n.weekly?.enabled;
+      $("notifWeeklyDay").value = String(typeof n.weekly?.day === "number" ? n.weekly.day : 0);
+      $("notifWeeklyTime").value = n.weekly?.time || "18:00";
+      updateChildToggleStates();
+      // Show denied warning
+      $("notifPermissionWarning").style.display =
+        (notifSupported() && Notification.permission === "denied") ? "block" : "none";
+    }
+
+    function updateChildToggleStates() {
+      const masterOn = $("notifMasterToggle").checked && notifSupported() && Notification.permission === "granted";
+      ["notifDailyToggle", "notifP0Toggle", "notifWeeklyToggle"].forEach(id => {
+        $(id).disabled = !masterOn;
+      });
+      ["notifDailyTime", "notifP0Time", "notifWeeklyTime", "notifWeeklyDay"].forEach(id => {
+        $(id).disabled = !masterOn;
+      });
+    }
+
+    // Wire up notification modal
+    const notifModal = $("notifModalBackdrop");
+    $("notifSettingsBtn").addEventListener("click", () => {
+      $("userMenu").classList.remove("open");
+      applySettingsToUI();
+      notifModal.classList.add("open");
+    });
+    $("closeNotifModalBtn").addEventListener("click", () => notifModal.classList.remove("open"));
+    notifModal.addEventListener("click", e => { if (e.target === notifModal) notifModal.classList.remove("open"); });
+
+    $("notifMasterToggle").addEventListener("change", async () => {
+      if ($("notifMasterToggle").checked) {
+        const granted = await requestNotifPermission();
+        if (!granted) {
+          $("notifMasterToggle").checked = false;
+          updateChildToggleStates();
+          return;
+        }
+      }
+      updateChildToggleStates();
+      saveNotifSettings();
+    });
+
+    ["notifDailyToggle", "notifP0Toggle", "notifWeeklyToggle",
+     "notifDailyTime", "notifP0Time", "notifWeeklyTime", "notifWeeklyDay"].forEach(id => {
+      $(id).addEventListener("change", saveNotifSettings);
+    });
+
+    $("testNotifBtn").addEventListener("click", async () => {
+      const granted = await requestNotifPermission();
+      if (!granted) return;
+      showNotif("Tasks Tracker — test", "Notifications are working. You're all set.");
+    });
 
     // ---- Wire up: New section ----
     const bar = $("newSectionBar");
