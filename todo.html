@@ -266,42 +266,192 @@
   .menu-info .name { font-size: 13px; font-weight: 500; color: var(--text); }
   .menu-info .email { font-size: 11px; color: var(--text-secondary); margin-top: 1px; word-break: break-all; }
 
-  /* Sheet tabs */
+  /* Sheet tabs — Flipkart-style bottom nav with colored icon bubbles */
   .tab-bar {
-    display: flex; gap: 4px; padding: 10px 32px 0;
+    display: flex; gap: 2px; padding: 10px 8px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    justify-content: space-around;
   }
   .tab-bar::-webkit-scrollbar { display: none; }
   .tab-btn {
-    background: none; border: none; color: var(--text-secondary);
-    font-family: inherit; font-size: 13px; font-weight: 600;
-    padding: 9px 16px; cursor: pointer;
-    border-radius: 7px 7px 0 0;
-    border: 1px solid transparent; border-bottom: none;
-    margin-bottom: -1px;
-    display: inline-flex; align-items: center; gap: 8px;
+    flex: 1 1 0;
+    min-width: 60px;
+    background: none; border: none;
+    color: var(--text-secondary);
+    font-family: inherit; font-size: 10.5px; font-weight: 600;
+    padding: 6px 4px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 5px;
     transition: all 0.15s;
+    white-space: nowrap; flex-shrink: 0;
+    letter-spacing: 0.02em;
   }
-  .tab-btn:hover { color: var(--text); background: var(--accent-soft); }
-  .tab-btn { white-space: nowrap; flex-shrink: 0; }
-  .tab-btn.active {
-    color: var(--accent); background: var(--surface);
-    border-color: var(--border); border-bottom-color: var(--surface);
+  /* The colored icon bubble — ALWAYS visible, color matches the tab */
+  .tab-btn .tab-icon-wrap {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 46px; height: 32px;
+    border-radius: 14px;
+    transition: all 0.18s ease;
+    border: 1px solid transparent;
   }
-  .tab-btn .tab-icon {
-    width: 14px; height: 14px;
-  }
+  .tab-btn .tab-icon { width: 22px; height: 22px; transition: color 0.15s; }
+  .tab-btn .tab-label { font-size: 10.5px; line-height: 1; }
   .tab-btn .tab-count {
-    background: var(--surface-elevated); color: var(--text-secondary);
-    padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 600;
-    border: 1px solid var(--border);
+    margin-top: 1px;
+    background: rgba(0,0,0,0.18); color: currentColor;
+    padding: 1px 6px; border-radius: 999px; font-size: 9px; font-weight: 700;
+    border: none;
   }
-  .tab-btn.active .tab-count {
-    background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border);
+
+  /* Inactive bubble — soft tint of the tab color, icon in full color */
+  .tab-btn[data-tab="tasks"] .tab-icon-wrap     { background: rgba(129,140,248,0.14); border-color: rgba(129,140,248,0.18); }
+  .tab-btn[data-tab="notes"] .tab-icon-wrap     { background: rgba(251,191,36,0.14);  border-color: rgba(251,191,36,0.18); }
+  .tab-btn[data-tab="bookmarks"] .tab-icon-wrap { background: rgba(34,211,238,0.14);  border-color: rgba(34,211,238,0.18); }
+  .tab-btn[data-tab="reminders"] .tab-icon-wrap { background: rgba(244,114,182,0.14); border-color: rgba(244,114,182,0.18); }
+  .tab-btn[data-tab="profile"] .tab-icon-wrap   { background: rgba(192,132,252,0.14); border-color: rgba(192,132,252,0.18); }
+
+  .tab-btn[data-tab="tasks"]     .tab-icon { color: var(--c-indigo); }
+  .tab-btn[data-tab="notes"]     .tab-icon { color: var(--c-amber); }
+  .tab-btn[data-tab="bookmarks"] .tab-icon { color: var(--c-cyan); }
+  .tab-btn[data-tab="reminders"] .tab-icon { color: var(--c-pink); }
+  .tab-btn[data-tab="profile"]   .tab-icon { color: var(--c-violet); }
+
+  /* Hover (inactive) — bubble gets a touch more saturated */
+  .tab-btn[data-tab="tasks"]:not(.active):hover     .tab-icon-wrap { background: rgba(129,140,248,0.28); border-color: rgba(129,140,248,0.4); }
+  .tab-btn[data-tab="notes"]:not(.active):hover     .tab-icon-wrap { background: rgba(251,191,36,0.28);  border-color: rgba(251,191,36,0.4); }
+  .tab-btn[data-tab="bookmarks"]:not(.active):hover .tab-icon-wrap { background: rgba(34,211,238,0.28);  border-color: rgba(34,211,238,0.4); }
+  .tab-btn[data-tab="reminders"]:not(.active):hover .tab-icon-wrap { background: rgba(244,114,182,0.28); border-color: rgba(244,114,182,0.4); }
+  .tab-btn[data-tab="profile"]:not(.active):hover   .tab-icon-wrap { background: rgba(192,132,252,0.28); border-color: rgba(192,132,252,0.4); }
+  .tab-btn[data-tab="tasks"]:not(.active):hover     { color: var(--c-indigo); }
+  .tab-btn[data-tab="notes"]:not(.active):hover     { color: var(--c-amber); }
+  .tab-btn[data-tab="bookmarks"]:not(.active):hover { color: var(--c-cyan); }
+  .tab-btn[data-tab="reminders"]:not(.active):hover { color: var(--c-pink); }
+  .tab-btn[data-tab="profile"]:not(.active):hover   { color: var(--c-violet); }
+
+  /* ACTIVE — fully saturated bubble, contrast-color icon, colored label, soft glow */
+  .tab-btn[data-tab="tasks"].active     { color: var(--c-indigo); }
+  .tab-btn[data-tab="tasks"].active     .tab-icon-wrap { background: var(--c-indigo); border-color: var(--c-indigo); box-shadow: 0 4px 12px rgba(129,140,248,0.4); }
+  .tab-btn[data-tab="tasks"].active     .tab-icon { color: #fff; }
+  .tab-btn[data-tab="notes"].active     { color: var(--c-amber); }
+  .tab-btn[data-tab="notes"].active     .tab-icon-wrap { background: var(--c-amber); border-color: var(--c-amber); box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
+  .tab-btn[data-tab="notes"].active     .tab-icon { color: #1a1208; }
+  .tab-btn[data-tab="bookmarks"].active { color: var(--c-cyan); }
+  .tab-btn[data-tab="bookmarks"].active .tab-icon-wrap { background: var(--c-cyan); border-color: var(--c-cyan); box-shadow: 0 4px 12px rgba(34,211,238,0.4); }
+  .tab-btn[data-tab="bookmarks"].active .tab-icon { color: #07232a; }
+  .tab-btn[data-tab="reminders"].active { color: var(--c-pink); }
+  .tab-btn[data-tab="reminders"].active .tab-icon-wrap { background: var(--c-pink); border-color: var(--c-pink); box-shadow: 0 4px 12px rgba(244,114,182,0.4); }
+  .tab-btn[data-tab="reminders"].active .tab-icon { color: #fff; }
+  .tab-btn[data-tab="profile"].active   { color: var(--c-violet); }
+  .tab-btn[data-tab="profile"].active   .tab-icon-wrap { background: var(--c-violet); border-color: var(--c-violet); box-shadow: 0 4px 12px rgba(192,132,252,0.4); }
+  .tab-btn[data-tab="profile"].active   .tab-icon { color: #fff; }
+
+  /* === MOBILE: bottom-fixed nav === */
+  @media (max-width: 600px) {
+    body { padding: 16px 0 96px 0; }
+    .container { border-radius: 0; border-left: none; border-right: none; min-height: calc(100vh - 16px - 96px); }
+    .tab-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      border-top: 1px solid var(--border); border-bottom: none;
+      padding: 10px 6px calc(10px + env(safe-area-inset-bottom)) 6px;
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.22);
+      z-index: 100;
+    }
+    .tab-btn { font-size: 9.5px; padding: 4px 2px; }
+    .tab-btn .tab-icon-wrap { width: 44px; height: 30px; border-radius: 12px; }
+    .tab-btn .tab-icon { width: 20px; height: 20px; }
+    .tab-btn .tab-count { display: none; }
+  }
+
+
+  /* Per-tab page backdrop — body gradient matches the active tab */
+  body.tab-tasks {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(129, 140, 248, 0.12), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(167, 139, 250, 0.08), transparent 60%);
+  }
+  body.tab-notes {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(251, 191, 36, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(251, 113, 133, 0.06), transparent 60%);
+  }
+  body.tab-bookmarks {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(34, 211, 238, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(45, 212, 191, 0.07), transparent 60%);
+  }
+  body.tab-reminders {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(244, 114, 182, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(192, 132, 252, 0.07), transparent 60%);
+  }
+  /* Light theme — softer values tuned for the lighter base */
+  body.theme-light.tab-tasks {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(67, 56, 202, 0.07), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(109, 40, 217, 0.05), transparent 60%);
+  }
+  body.theme-light.tab-notes {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(217, 119, 6, 0.07), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(225, 29, 72, 0.04), transparent 60%);
+  }
+  body.theme-light.tab-bookmarks {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(8, 145, 178, 0.06), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(13, 148, 136, 0.05), transparent 60%);
+  }
+  body.theme-light.tab-reminders {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(219, 39, 119, 0.06), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(126, 34, 206, 0.04), transparent 60%);
+  }
+
+  /* Per-tab surface tint — overrides the panel background colors */
+  body:not(.theme-light).tab-tasks {
+    --surface:          color-mix(in srgb, #18181b 90%, #818cf8);
+    --surface-soft:     color-mix(in srgb, #1c1c21 90%, #818cf8);
+    --surface-elevated: color-mix(in srgb, #27272a 90%, #818cf8);
+  }
+  body:not(.theme-light).tab-notes {
+    --surface:          color-mix(in srgb, #18181b 90%, #fbbf24);
+    --surface-soft:     color-mix(in srgb, #1c1c21 90%, #fbbf24);
+    --surface-elevated: color-mix(in srgb, #27272a 90%, #fbbf24);
+  }
+  body:not(.theme-light).tab-bookmarks {
+    --surface:          color-mix(in srgb, #18181b 90%, #22d3ee);
+    --surface-soft:     color-mix(in srgb, #1c1c21 90%, #22d3ee);
+    --surface-elevated: color-mix(in srgb, #27272a 90%, #22d3ee);
+  }
+  body:not(.theme-light).tab-reminders {
+    --surface:          color-mix(in srgb, #18181b 90%, #f472b6);
+    --surface-soft:     color-mix(in srgb, #1c1c21 90%, #f472b6);
+    --surface-elevated: color-mix(in srgb, #27272a 90%, #f472b6);
+  }
+  body.theme-light.tab-tasks {
+    --surface:          color-mix(in srgb, #ffffff 94%, #4338ca);
+    --surface-soft:     color-mix(in srgb, #f8fafc 94%, #4338ca);
+    --surface-elevated: color-mix(in srgb, #f1f5f9 94%, #4338ca);
+  }
+  body.theme-light.tab-notes {
+    --surface:          color-mix(in srgb, #ffffff 94%, #d97706);
+    --surface-soft:     color-mix(in srgb, #f8fafc 94%, #d97706);
+    --surface-elevated: color-mix(in srgb, #f1f5f9 94%, #d97706);
+  }
+  body.theme-light.tab-bookmarks {
+    --surface:          color-mix(in srgb, #ffffff 94%, #0891b2);
+    --surface-soft:     color-mix(in srgb, #f8fafc 94%, #0891b2);
+    --surface-elevated: color-mix(in srgb, #f1f5f9 94%, #0891b2);
+  }
+  body.theme-light.tab-reminders {
+    --surface:          color-mix(in srgb, #ffffff 94%, #db2777);
+    --surface-soft:     color-mix(in srgb, #f8fafc 94%, #db2777);
+    --surface-elevated: color-mix(in srgb, #f1f5f9 94%, #db2777);
   }
 
   /* Stats strip */
@@ -1157,73 +1307,50 @@
 
 <!-- Main app -->
 <div id="app" class="container" style="display:none;">
-  <header>
-    <div class="title-block">
-      <h1 class="brand-title">Atlas</h1>
-      <div class="date" id="todayDate"></div>
-    </div>
-    <div class="user-block">
-      <button class="theme-toggle" id="themeToggle" title="Toggle light / dark mode (D)" type="button">
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="4"/>
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
-      </button>
-      <span class="sync-badge" id="syncBadge"><span class="sync-dot"></span><span id="syncText">Synced</span></span>
-      <div class="menu-wrap">
-        <div class="avatar" id="avatar" title="Account"></div>
-        <div class="menu" id="userMenu">
-          <div class="menu-info">
-            <div class="name" id="menuName"></div>
-            <div class="email" id="menuEmail"></div>
-          </div>
-          <button class="menu-item" id="exportCsvBtn">Export tasks to CSV</button>
-          <button class="menu-item" id="notifSettingsBtn">Settings</button>
-          <button class="menu-item" id="shortcutsBtn">Keyboard shortcuts</button>
-          <div class="menu-divider"></div>
-          <button class="menu-item" id="signOutBtn">Sign out</button>
-        </div>
-      </div>
-    </div>
-  </header>
 
-  <!-- Sheet tabs -->
-  <div class="tab-bar">
+  <!-- Sheet tabs (responsive — top on desktop, bottom on mobile) -->
+  <nav class="tab-bar" id="tabBar">
     <button class="tab-btn active" id="tabTasksBtn" type="button" data-tab="tasks">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M9 11l3 3L22 4"/>
         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-      </svg>
+      </svg></span>
       <span class="tab-label">Tasks</span>
     </button>
     <button class="tab-btn" id="tabNotesBtn" type="button" data-tab="notes">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
         <path d="M14 2v6h6"/>
         <path d="M8 13h8M8 17h6"/>
-      </svg>
+      </svg></span>
       <span class="tab-label">Notes</span>
       <span class="tab-count" id="tabNotesCount">0</span>
     </button>
     <button class="tab-btn" id="tabBookmarksBtn" type="button" data-tab="bookmarks">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-      </svg>
+      </svg></span>
       <span class="tab-label">Bookmarks</span>
       <span class="tab-count" id="tabBookmarksCount">0</span>
     </button>
     <button class="tab-btn" id="tabRemindersBtn" type="button" data-tab="reminders">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         <circle cx="12" cy="11" r="3"/>
-      </svg>
+      </svg></span>
       <span class="tab-label">Reminders</span>
       <span class="tab-count" id="tabRemindersCount">0</span>
     </button>
-  </div>
+    <button class="tab-btn" id="tabProfileBtn" type="button" data-tab="profile">
+      <span class="tab-icon-wrap">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <span class="tab-label">Profile</span>
+    </button>
+  </nav>
 
   <!-- Tasks view -->
   <div id="tasksView">
@@ -1446,35 +1573,46 @@
     </div>
   </div>
 
-  <footer>
-    <div class="footer-line">
-      <span>Synced via Firebase</span>
-      <span class="footer-sep">·</span>
-      <a class="footer-credit" href="https://www.instagram.com/imsarathc/" target="_blank" rel="noopener noreferrer" title="Developed by ImSarathC — visit on Instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-          <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
-        </svg>
-        <span>Developed by ImSarathC</span>
-      </a>
-    </div>
-  </footer>
-</div>
+  <!-- Profile view -->
+  <div id="profileView" style="display:none;">
+    <div class="profile-page">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar"></div>
+        <div class="profile-meta">
+          <div class="profile-name" id="profileName"></div>
+          <div class="profile-email" id="profileEmail"></div>
+          <div class="profile-sync" id="profileSync">
+            <span class="profile-sync-dot"></span>
+            <span id="profileSyncText">Synced</span>
+          </div>
+        </div>
+      </div>
 
-<!-- Notification settings modal -->
-<div class="modal-backdrop" id="notifModalBackdrop">
-  <div class="modal">
-    <div class="modal-head">
-      <h2>Settings</h2>
-      <button class="icon-btn" id="closeNotifModalBtn">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="notif-section">
-        <div class="cleanup-row">
-          <div class="cleanup-label">
-            <div class="notif-title">Auto-delete completed tasks</div>
-            <div class="notif-sub">Permanently remove closed tasks after this many days</div>
+      <div class="settings-block">
+        <div class="settings-block-title">Appearance</div>
+        <div class="settings-row">
+          <div class="settings-row-text">
+            <div class="settings-row-title">Theme</div>
+            <div class="settings-row-sub">Switch between dark and light mode</div>
+          </div>
+          <button class="theme-toggle" id="themeToggle" title="Toggle light / dark mode (D)" type="button">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-block">
+        <div class="settings-block-title">Settings</div>
+        <div class="settings-row">
+          <div class="settings-row-text">
+            <div class="settings-row-title">Auto-delete completed tasks</div>
+            <div class="settings-row-sub">Permanently remove closed tasks after this many days</div>
           </div>
           <select id="cleanupRetentionSelect" class="cleanup-select">
             <option value="0">Never</option>
@@ -1483,11 +1621,52 @@
             <option value="90">90 days</option>
           </select>
         </div>
+        <button class="settings-link-btn" id="notifSettingsBtn">
+          <span class="settings-row-title">Notification settings</span>
+          <span class="settings-arrow">→</span>
+        </button>
+        <button class="settings-link-btn" id="shortcutsBtn">
+          <span class="settings-row-title">Keyboard shortcuts</span>
+          <span class="settings-arrow">→</span>
+        </button>
+      </div>
 
-        <div class="notif-divider"></div>
+      <div class="settings-block">
+        <div class="settings-block-title">Data</div>
+        <button class="settings-link-btn" id="exportCsvBtn">
+          <span class="settings-row-title">Export tasks to CSV</span>
+          <span class="settings-arrow">↓</span>
+        </button>
+      </div>
 
-        <div style="font-size:13px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:-4px;">Notifications</div>
+      <div class="settings-block">
+        <button class="settings-signout-btn" id="signOutBtn">Sign out</button>
+      </div>
 
+      <div class="profile-footer">
+        Developed by <a class="footer-credit" href="https://www.instagram.com/imsarathc/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+          </svg>
+          <span>ImSarathC</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Notification settings modal -->
+<div class="modal-backdrop" id="notifModalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Notification settings</h2>
+      <button class="icon-btn" id="closeNotifModalBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="notif-section">
         <div class="notif-row">
           <label class="toggle-switch">
             <input type="checkbox" id="notifMasterToggle">
@@ -1658,9 +1837,7 @@
     const TAB_KEY = "tt.tab";
     let activeTab = localStorage.getItem(TAB_KEY) || "tasks";
 
-    $("todayDate").textContent = new Date().toLocaleDateString(undefined, {
-      weekday: "long", year: "numeric", month: "long", day: "numeric"
-    });
+
 
     // ---- Auth ----
     $("signInBtn").addEventListener("click", async () => {
@@ -1670,13 +1847,7 @@
     });
     $("signOutBtn").addEventListener("click", async () => {
       await signOut(auth);
-      $("userMenu").classList.remove("open");
     });
-    $("avatar").addEventListener("click", e => {
-      e.stopPropagation();
-      $("userMenu").classList.toggle("open");
-    });
-    document.addEventListener("click", () => $("userMenu").classList.remove("open"));
 
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
@@ -1705,9 +1876,9 @@
       $("app").style.display = "block";
       $("loadingScreen").style.display = "none";
       const name = user.displayName || user.email;
-      $("menuName").textContent = name;
-      $("menuEmail").textContent = user.email;
-      const avatar = $("avatar");
+      $("profileName").textContent = name;
+      $("profileEmail").textContent = user.email;
+      const avatar = $("profileAvatar");
       avatar.innerHTML = "";
       if (user.photoURL) {
         const img = document.createElement("img");
@@ -1718,7 +1889,8 @@
 
     // ---- Sync indicator ----
     function setSync(state) {
-      const badge = $("syncBadge"); const text = $("syncText");
+      const badge = $("profileSync"); const text = $("profileSyncText");
+      if (!badge || !text) return;
       badge.classList.remove("syncing", "offline");
       if (state === "syncing") { badge.classList.add("syncing"); text.textContent = "Saving…"; }
       else if (state === "offline") { badge.classList.add("offline"); text.textContent = "Offline"; }
@@ -3035,18 +3207,20 @@
     }
 
     // ---- Tab switching ----
-    const TABS = ["tasks", "notes", "bookmarks", "reminders"];
+    const TABS = ["tasks", "notes", "bookmarks", "reminders", "profile"];
     const TAB_VIEWS = {
       tasks: "tasksView",
       notes: "notesView",
       bookmarks: "bookmarksView",
-      reminders: "remindersView"
+      reminders: "remindersView",
+      profile: "profileView"
     };
     const TAB_BTNS = {
       tasks: "tabTasksBtn",
       notes: "tabNotesBtn",
       bookmarks: "tabBookmarksBtn",
-      reminders: "tabRemindersBtn"
+      reminders: "tabRemindersBtn",
+      profile: "tabProfileBtn"
     };
     function setActiveTab(tab) {
       if (!TABS.includes(tab)) tab = "tasks";
@@ -3057,7 +3231,9 @@
         const btn = $(TAB_BTNS[t]);
         if (view) view.style.display = (t === tab) ? "block" : "none";
         if (btn) btn.classList.toggle("active", t === tab);
+        document.body.classList.remove("tab-" + t);
       });
+      document.body.classList.add("tab-" + tab);
     }
     function nextTab(direction) {
       const i = TABS.indexOf(activeTab);
@@ -3359,7 +3535,6 @@
     // Wire up notification modal
     const notifModal = $("notifModalBackdrop");
     $("notifSettingsBtn").addEventListener("click", () => {
-      $("userMenu").classList.remove("open");
       applySettingsToUI();
       notifModal.classList.add("open");
     });
@@ -3637,14 +3812,8 @@
     });
 
     // ---- Menu items ----
-    $("exportCsvBtn").addEventListener("click", () => {
-      $("userMenu").classList.remove("open");
-      exportCsv();
-    });
-    $("shortcutsBtn").addEventListener("click", () => {
-      $("userMenu").classList.remove("open");
-      $("modalBackdrop").classList.add("open");
-    });
+    $("exportCsvBtn").addEventListener("click", () => exportCsv());
+    $("shortcutsBtn").addEventListener("click", () => $("modalBackdrop").classList.add("open"));
 
     // ---- Modal ----
     const modal = $("modalBackdrop");
