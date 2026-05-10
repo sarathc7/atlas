@@ -785,7 +785,9 @@
       column-gap: 6px;
       row-gap: 6px;
       align-items: center;
+      padding: 12px 10px;
     }
+    .task-item + .task-item { border-top: 1px solid var(--border-strong); }
     .task-item .task-text-input {
       flex: 1 1 100%;
       order: 2;
@@ -800,7 +802,8 @@
     .task-item .priority-pill   { order: 4; }
     .task-item .task-time       { order: 5; margin-left: auto; }
     .task-item .move-btn        { order: 6; }
-    .task-item .icon-btn        { order: 7; }
+    .task-item .edit-btn        { order: 7; }
+    .task-item .icon-btn        { order: 8; }
     .task-item .due-pill        { font-size: 10.5px; padding: 2px 6px; }
     .task-item .priority-pill   { font-size: 10px; padding: 2px 6px; }
     .task-item .task-time       { font-size: 10.5px; }
@@ -986,10 +989,44 @@
   .template-item .icon-btn { opacity: 1; }
   .icon-btn:hover { color: var(--danger); background: var(--danger-soft); }
 
-  /* Touch devices: always show icon buttons (no hover state to reveal them) */
+  /* Pencil-icon edit button - the only way to enter edit mode for a
+     title/name field. Same shape as .icon-btn but accent-colored. */
+  .edit-btn {
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    padding: 4px 6px; border-radius: 5px;
+    line-height: 1; transition: all 0.15s;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; opacity: 0;
+  }
+  .edit-btn svg { width: 13px; height: 13px; display: block; }
+  .edit-btn:hover { color: var(--accent); background: var(--accent-soft); }
+  .section-head:hover .edit-btn,
+  .task-item:hover .edit-btn,
+  .note-card:hover .edit-btn,
+  .bookmark-card:hover .edit-btn { opacity: 1; }
+
+  /* Touch devices: always show edit + icon buttons (no hover state) */
   @media (hover: none) {
     .icon-btn { opacity: 1; }
+    .edit-btn { opacity: 1; }
     .due-pill.empty { opacity: 1; }
+  }
+
+  /* Readonly title/name fields - look like plain text, no edit affordance */
+  .task-text-input[readonly],
+  .section-name[readonly],
+  .note-title-input[readonly],
+  .bookmark-title-input[readonly] {
+    cursor: default;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
+  .task-text-input[readonly]:hover,
+  .section-name[readonly]:hover,
+  .note-title-input[readonly]:hover,
+  .bookmark-title-input[readonly]:hover {
+    background: transparent !important;
   }
 
   /* Move (reorder) buttons — accent on hover, not danger */
@@ -1000,6 +1037,8 @@
 
   /* Task list */
   .task-list { list-style: none; }
+  /* Subtle separator between adjacent tasks in a section */
+  .task-item + .task-item { border-top: 1px solid var(--border); }
 
   .task-item {
     display: flex; align-items: center; gap: 10px;
@@ -2845,6 +2884,24 @@
       return wrap;
     }
 
+    // Builds a small accent-colored pencil button that, when clicked,
+    // unlocks the given input field for editing (focuses + selects all).
+    // The input must wire its blur handler to set readOnly = true again.
+    function makeEditButton(input, title) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "edit-btn";
+      b.title = title || "Edit";
+      b.innerHTML = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12.5L1.5 10.5L9.5 2.5L11.5 4.5L3.5 12.5L1.5 12.5Z"/><path d="M8.5 3.5L10.5 5.5"/></svg>';
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        input.readOnly = false;
+        input.focus();
+        if (typeof input.select === "function") input.select();
+      });
+      return b;
+    }
+
     function makeTaskNode(t) {
       const status = getStatus(t);
       const li = document.createElement("li");
@@ -2857,11 +2914,13 @@
       text.type = "text";
       text.className = "task-text-input";
       text.value = t.text;
-      text.title = "Click to edit";
-      text.addEventListener("focus", () => { editingTaskId = t.id; });
+      text.readOnly = true;
+      text.title = "Tap pencil to edit";
+      text.addEventListener("focus", () => { if (!text.readOnly) editingTaskId = t.id; });
       text.addEventListener("blur", async () => {
         editingTaskId = null;
         const v = text.value.trim();
+        text.readOnly = true;
         if (!v) { text.value = t.text; return; }
         if (v !== t.text) await updateTaskText(t.id, v);
       });
@@ -2908,6 +2967,8 @@
         li.appendChild(downBtn);
       }
 
+      li.appendChild(makeEditButton(text, "Edit task name"));
+
       const del = document.createElement("button");
       del.className = "icon-btn";
       del.title = "Delete task";
@@ -2932,15 +2993,18 @@
       const nameInput = document.createElement("input");
       nameInput.className = "section-name";
       nameInput.value = section.name;
-      nameInput.title = "Click to rename";
+      nameInput.readOnly = true;
+      nameInput.title = "Tap pencil to rename";
       nameInput.addEventListener("change", () => {
         const n = nameInput.value.trim();
         if (!n) { nameInput.value = section.name; return; }
         renameSection(section.id, n);
       });
+      nameInput.addEventListener("blur", () => { nameInput.readOnly = true; });
       nameInput.addEventListener("keydown", e => {
         e.stopPropagation();
         if (e.key === "Enter") nameInput.blur();
+        if (e.key === "Escape") { nameInput.value = section.name; nameInput.blur(); }
       });
 
       const typeBadge = document.createElement("span");
@@ -2979,6 +3043,8 @@
           sortBtn.addEventListener("click", () => sortSectionByPriority(section.id));
           head.appendChild(sortBtn);
         }
+
+        head.appendChild(makeEditButton(nameInput, "Rename section"));
 
         const delBtn = document.createElement("button");
         delBtn.className = "icon-btn";
@@ -3310,10 +3376,12 @@
         titleInput.className = "note-title-input";
         titleInput.value = n.title || "";
         titleInput.placeholder = "Untitled";
-        titleInput.title = "Click to rename";
-        titleInput.addEventListener("focus", () => { editingNoteId = n.id; });
+        titleInput.readOnly = true;
+        titleInput.title = "Tap pencil to rename";
+        titleInput.addEventListener("focus", () => { if (!titleInput.readOnly) editingNoteId = n.id; });
         titleInput.addEventListener("blur", async () => {
           editingNoteId = null;
+          titleInput.readOnly = true;
           const v = titleInput.value.trim();
           if (v && v !== (n.title || "")) await updateNoteTitle(n.id, v);
           else if (!v) titleInput.value = n.title || "Untitled";
@@ -3368,6 +3436,7 @@
         del.addEventListener("click", () => deleteNote(n.id));
 
         head.appendChild(titleInput);
+        head.appendChild(makeEditButton(titleInput, "Rename note"));
         head.appendChild(bulletBtn);
         head.appendChild(del);
 
@@ -3455,10 +3524,12 @@
         titleInput.className = "bookmark-title-input";
         titleInput.value = b.title || "";
         titleInput.placeholder = "Untitled";
-        titleInput.title = "Click to rename";
-        titleInput.addEventListener("focus", () => { editingBookmarkId = b.id; });
+        titleInput.readOnly = true;
+        titleInput.title = "Tap pencil to rename";
+        titleInput.addEventListener("focus", () => { if (!titleInput.readOnly) editingBookmarkId = b.id; });
         titleInput.addEventListener("blur", async () => {
           editingBookmarkId = null;
+          titleInput.readOnly = true;
           const v = titleInput.value.trim();
           if (v && v !== (b.title || "")) await updateBookmarkField(b.id, "title", v);
           else if (!v) titleInput.value = b.title || "";
@@ -3477,6 +3548,7 @@
         del.addEventListener("click", () => deleteBookmark(b.id));
 
         head.appendChild(titleInput);
+        head.appendChild(makeEditButton(titleInput, "Rename bookmark"));
         head.appendChild(del);
 
         const link = document.createElement("a");
