@@ -2497,18 +2497,24 @@
       }));
       if (type === "general" && templates.length > 0) {
         const now = new Date();
+        // Only consider tasks whose section still exists. An orphan task in a
+        // just-deleted section must NOT block this template from re-firing.
+        // (Includes the section we just added so its existence doesn't matter
+        // either way for week/month checks.)
+        const liveSectionIds = new Set(sections.map(s => s.id).concat([sectionRef.id]));
+        const liveTasks = tasks.filter(task => liveSectionIds.has(task.sectionId));
         const eligible = templates.filter(t => {
           const freq = t.frequency || "daily";
           if (freq === "daily") return true;
           if (freq === "weekly") {
-            return !tasks.some(task => {
+            return !liveTasks.some(task => {
               if (task.fromTemplate !== t.id) return false;
               const d = tsToDate(task.createdAt);
               return d && isInSameWeek(d, now);
             });
           }
           if (freq === "monthly") {
-            return !tasks.some(task => {
+            return !liveTasks.some(task => {
               if (task.fromTemplate !== t.id) return false;
               const d = tsToDate(task.createdAt);
               return d && isInSameMonth(d, now);
@@ -2516,6 +2522,7 @@
           }
           return true;
         });
+        console.log(`[addSection] new ${type} section "${trimmed}": ${eligible.length}/${templates.length} templates eligible (${templates.length - eligible.length} already fired this period in another live section).`);
         if (eligible.length > 0) {
           const batch = writeBatch(db);
           eligible.forEach((t, i) => {
