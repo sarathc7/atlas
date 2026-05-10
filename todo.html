@@ -611,6 +611,70 @@
   .btn-ghost { background: transparent; color: var(--text-secondary); border-color: var(--border-strong); }
   .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
 
+  /* Welcome / empty state card */
+  .welcome-card {
+    margin: 18px 24px;
+    padding: 28px 24px;
+    background: var(--surface-soft); border: 1px solid var(--border);
+    border-radius: 16px;
+    text-align: center;
+  }
+  .welcome-icon {
+    width: 56px; height: 56px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(129,140,248,0.18), rgba(192,132,252,0.18));
+    border: 1px solid var(--accent-border);
+    border-radius: 16px;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .welcome-icon svg { width: 28px; height: 28px; }
+  .welcome-title {
+    font-size: 18px; font-weight: 700; margin-bottom: 6px;
+    background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: -0.01em;
+  }
+  body.theme-light .welcome-title {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .welcome-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+  .welcome-tour {
+    display: flex; flex-direction: column; gap: 8px;
+    text-align: left; max-width: 360px; margin: 0 auto 20px;
+  }
+  .welcome-tour-item {
+    font-size: 12px; color: var(--text-secondary);
+    padding: 8px 12px; background: var(--surface-elevated);
+    border: 1px solid var(--border); border-radius: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .welcome-tour-item strong { color: var(--text); }
+  .welcome-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .welcome-dot-tasks { background: var(--c-indigo); box-shadow: 0 0 6px var(--c-indigo); }
+  .welcome-dot-notes { background: var(--c-amber); box-shadow: 0 0 6px var(--c-amber); }
+  .welcome-dot-bookmarks { background: var(--c-cyan); box-shadow: 0 0 6px var(--c-cyan); }
+  .welcome-dot-reminders { background: var(--c-pink); box-shadow: 0 0 6px var(--c-pink); }
+  .welcome-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* Reminder ack button */
+  .reminder-ack-btn {
+    background: var(--success-soft); color: var(--success);
+    border: 1px solid var(--success-border);
+    padding: 5px 10px; border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .reminder-ack-btn:hover { background: var(--success); color: #07221b; }
+  .reminder-ack-btn svg { width: 11px; height: 11px; }
+  .reminder-card.is-acked { opacity: 0.5; }
+  .reminder-card.is-acked .reminder-ack-status {
+    color: var(--success); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
   /* New section bar */
   .new-section-bar { padding: 14px 32px; border-bottom: 1px solid var(--border); background: var(--surface); }
   .new-section-toggle {
@@ -652,7 +716,64 @@
     letter-spacing: 0.08em; color: var(--text-muted); margin-right: 4px;
   }
 
-  /* Templates panel */
+  /* New-section row (button + recurring button) */
+  .new-section-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .new-section-bar.open .new-section-row .recurring-btn { display: none; }
+
+  /* Recurring tasks button (opens modal) */
+  .recurring-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface-elevated); border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 6px 10px; border-radius: 7px;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  }
+  .recurring-btn:hover {
+    color: var(--c-cyan); border-color: rgba(34,211,238,0.4);
+    background: rgba(34,211,238,0.08);
+  }
+  .recurring-btn svg { width: 13px; height: 13px; color: var(--c-cyan); }
+  .recurring-count {
+    background: rgba(34,211,238,0.16); color: var(--c-cyan);
+    padding: 1px 7px; border-radius: 999px;
+    font-size: 10px; font-weight: 700;
+  }
+
+  /* Modal large variant */
+  .modal.modal-lg { max-width: 560px; }
+
+  /* Templates panel (legacy, now hidden) */
+  .templates-panel { display: none; }
+
+  /* Templates content (used inside the recurring modal now) */
+  /* On mobile, stack template rows: title on its own line, controls below */
+  @media (max-width: 600px) {
+    .template-item {
+      flex-wrap: wrap;
+      gap: 6px 8px;
+      padding: 10px 12px;
+    }
+    .template-item .template-text {
+      flex: 1 0 100%;
+      font-size: 14px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .template-item .template-last-applied {
+      font-size: 10px;
+      margin-right: auto; /* push pills/buttons to the right */
+    }
+    .template-item .priority-pill,
+    .template-item .frequency-badge {
+      font-size: 10px; padding: 2px 7px;
+    }
+    .template-item .icon-btn { padding: 4px 6px; }
+  }
+
   .templates-panel { border-bottom: 1px solid var(--border); background: var(--surface); }
   .templates-toggle {
     width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -872,6 +993,40 @@
     background: var(--surface); border-color: var(--accent-border);
     box-shadow: 0 0 0 3px var(--accent-soft);
   }
+
+  /* Due-date pill on task rows */
+  .due-pill-wrap { position: relative; flex-shrink: 0; }
+  .due-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 7px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text-muted);
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.2;
+  }
+  .due-pill svg { width: 11px; height: 11px; }
+  .due-pill:hover { color: var(--text); border-color: var(--border-strong); }
+  .due-pill.empty { opacity: 0.55; padding: 3px 5px; }
+  .task-item:hover .due-pill.empty { opacity: 1; }
+  .due-pill.has-date.overdue { color: var(--p0); border-color: rgba(248,113,113,0.4); background: var(--danger-soft); }
+  .due-pill.has-date.today   { color: var(--c-amber); border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.08); }
+  .due-pill.has-date.soon    { color: var(--c-amber); border-color: rgba(251,191,36,0.25); }
+  .due-pill.has-date.future  { color: var(--text-secondary); }
+  .due-pill-hidden-input {
+    position: absolute; opacity: 0; pointer-events: none;
+    width: 1px; height: 1px; left: 0; top: 0;
+  }
+  .task-form-due {
+    padding: 6px 8px; border: 1px solid var(--border-strong);
+    border-radius: 6px; background: var(--surface-elevated);
+    color: var(--text); font-family: inherit; font-size: 12px;
+    flex-shrink: 0; outline: none;
+  }
+  .task-form-due:focus { border-color: var(--accent); }
 
   /* Priority pill */
   .priority-pill {
@@ -1470,6 +1625,27 @@
   <!-- Tasks view -->
   <div id="tasksView">
 
+  <!-- Welcome / empty state -->
+  <div id="welcomeCard" class="welcome-card" style="display:none;">
+    <div class="welcome-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </div>
+    <h2 class="welcome-title">Welcome to Atlas</h2>
+    <p class="welcome-sub">Your personal hub for daily work and life.</p>
+    <div class="welcome-tour">
+      <div class="welcome-tour-item"><span class="welcome-dot welcome-dot-tasks"></span><strong>Tasks</strong> — daily work in dated sections</div>
+      <div class="welcome-tour-item"><span class="welcome-dot welcome-dot-notes"></span><strong>Notes</strong> — free-form thoughts</div>
+      <div class="welcome-tour-item"><span class="welcome-dot welcome-dot-bookmarks"></span><strong>Bookmarks</strong> — links to revisit</div>
+      <div class="welcome-tour-item"><span class="welcome-dot welcome-dot-reminders"></span><strong>Reminders</strong> — birthdays and annual dates</div>
+    </div>
+    <div class="welcome-actions">
+      <button class="btn btn-primary" id="seedSampleBtn">Add sample data</button>
+      <button class="btn btn-ghost" id="dismissWelcomeBtn">I'll explore on my own</button>
+    </div>
+  </div>
+
   <!-- Stats strip -->
   <div class="stats-strip">
     <div class="stat success-stat">
@@ -1496,10 +1672,20 @@
 
   <!-- New section -->
   <div class="new-section-bar" id="newSectionBar">
-    <button class="new-section-toggle" id="newSectionToggle">
-      <span class="plus">+</span>
-      <span>New section <kbd style="font-size:10px;color:var(--text-muted);margin-left:4px;">N</kbd></span>
-    </button>
+    <div class="new-section-row">
+      <button class="new-section-toggle" id="newSectionToggle">
+        <span class="plus">+</span>
+        <span>New section <kbd style="font-size:10px;color:var(--text-muted);margin-left:4px;">N</kbd></span>
+      </button>
+      <button class="recurring-btn" id="openRecurringBtn" type="button" title="Manage recurring tasks (R)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 4v4h-4"/>
+          <path d="M21 12a9 9 0 0 1-15 6.7L3 16M3 20v-4h4"/>
+        </svg>
+        <span>Recurring</span>
+        <span class="recurring-count" id="templatesCount">0</span>
+      </button>
+    </div>
     <div class="new-section-form" id="newSectionForm">
       <div class="row">
         <span class="form-label">Type</span>
@@ -1515,43 +1701,6 @@
       </div>
       <div style="font-size:11px; color: var(--text-muted); padding: 0 2px;">
         <strong style="color: var(--c-cyan);">General</strong> sections auto-include your recurring tasks. <strong>Others</strong> start empty.
-      </div>
-    </div>
-  </div>
-
-  <!-- Templates -->
-  <div class="templates-panel" id="templatesPanel">
-    <button class="templates-toggle" id="templatesToggle">
-      <span class="left">
-        <span class="chevron">▶</span>
-        <span class="recur-icon">↻</span>
-        <span>Recurring tasks</span>
-        <span class="templates-count" id="templatesCount">0</span>
-      </span>
-      <span style="font-size:11px; color: var(--text-muted);">Auto-added to General sections</span>
-    </button>
-    <div class="templates-content">
-      <div class="templates-help">
-        Recurring tasks auto-populate new <strong>General</strong> sections based on frequency:<br>
-        <strong style="color: var(--c-cyan);">Daily</strong> — added to every new General section.
-        <strong style="color: var(--c-emerald);">Weekly</strong> — added once per week (first General section of the week).
-        <strong style="color: var(--c-violet);">Monthly</strong> — added once per month (first General section of the month).
-      </div>
-      <ul class="template-list" id="templateList"></ul>
-      <div class="template-add-form">
-        <input type="text" class="input-clean" id="newTemplateInput" placeholder="Recurring task description (e.g. Send weekly report)" autocomplete="off" />
-        <select class="priority-select" id="newTemplatePriority">
-          <option value="P0">P0 · Critical</option>
-          <option value="P1">P1 · High</option>
-          <option value="P2" selected>P2 · Medium</option>
-          <option value="P3">P3 · Low</option>
-        </select>
-        <select class="priority-select" id="newTemplateFrequency">
-          <option value="daily" selected>Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-        <button class="btn btn-primary" id="addTemplateBtn">Add</button>
       </div>
     </div>
   </div>
@@ -1761,6 +1910,21 @@
           </div>
           <span class="settings-arrow">↓</span>
         </button>
+        <button class="settings-link-btn" id="backupJsonBtn">
+          <div class="settings-row-text">
+            <div class="settings-row-title">Backup all data (JSON)</div>
+            <div class="settings-row-sub">Download a complete backup of every tab</div>
+          </div>
+          <span class="settings-arrow">↓</span>
+        </button>
+        <button class="settings-link-btn" id="restoreJsonBtn">
+          <div class="settings-row-text">
+            <div class="settings-row-title">Restore from backup</div>
+            <div class="settings-row-sub">Replace current data with a JSON backup file</div>
+          </div>
+          <span class="settings-arrow">↑</span>
+        </button>
+        <input type="file" id="restoreJsonInput" accept="application/json,.json" style="display:none;" />
       </div>
 
       <div class="settings-block">
@@ -1862,6 +2026,40 @@
         <div class="notif-info">
           <strong>How this works:</strong> Reminders fire while the app is installed and running in the background. Install to your home screen for best reliability. If your phone fully closes the app for hours, scheduled reminders may not fire — open the app once a day to keep them active.
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recurring tasks modal -->
+<div class="modal-backdrop" id="recurringModalBackdrop">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2>Recurring tasks</h2>
+      <button class="icon-btn" id="closeRecurringModalBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="templates-help">
+        Recurring tasks auto-populate new <strong>General</strong> sections based on frequency:<br>
+        <strong style="color: var(--c-cyan);">Daily</strong> — added to every new General section.
+        <strong style="color: var(--c-emerald);">Weekly</strong> — added once per week (first General section of the week).
+        <strong style="color: var(--c-violet);">Monthly</strong> — added once per month (first General section of the month).
+      </div>
+      <ul class="template-list" id="templateList"></ul>
+      <div class="template-add-form">
+        <input type="text" class="input-clean" id="newTemplateInput" placeholder="Recurring task description (e.g. Send weekly report)" autocomplete="off" />
+        <select class="priority-select" id="newTemplatePriority">
+          <option value="P0">P0 · Critical</option>
+          <option value="P1">P1 · High</option>
+          <option value="P2" selected>P2 · Medium</option>
+          <option value="P3">P3 · Low</option>
+        </select>
+        <select class="priority-select" id="newTemplateFrequency">
+          <option value="daily" selected>Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+        <button class="btn btn-primary" id="addTemplateBtn">Add</button>
       </div>
     </div>
   </div>
@@ -2062,6 +2260,7 @@
         settings = snap.exists() ? snap.data() : { notifications: {}, cleanup: {} };
         if (!settings.notifications) settings.notifications = {};
         if (!settings.cleanup) settings.cleanup = {};
+        updateWelcomeVisibility();
         applySettingsToUI();
         scheduleAllNotifications();
         // Trigger cleanup if it was deferred until settings loaded
@@ -2119,15 +2318,15 @@
     }
     function formatLastApplied(ts) {
       const d = tsToDate(ts);
-      if (!d) return "Never applied";
+      if (!d) return "Never";
       const now = new Date();
       const todayKey = now.toDateString();
-      if (d.toDateString() === todayKey) return "Last: today";
+      if (d.toDateString() === todayKey) return "Today";
       const yest = new Date(now); yest.setDate(yest.getDate() - 1);
-      if (d.toDateString() === yest.toDateString()) return "Last: yesterday";
+      if (d.toDateString() === yest.toDateString()) return "Yesterday";
       const diffD = Math.floor((now.getTime() - d.getTime()) / 86400000);
-      if (diffD < 7) return `Last: ${diffD}d ago`;
-      return `Last: ${formatDateShort(ts)}`;
+      if (diffD < 7) return `${diffD}d ago`;
+      return formatDateShort(ts);
     }
     function getStatus(t) {
       if (t.status) return t.status;
@@ -2236,15 +2435,19 @@
     }
 
     // ---- Mutations: Tasks ----
-    async function addTask(sectionId, text, priority) {
+    async function addTask(sectionId, text, priority, dueDate) {
       const t = (text || "").trim(); if (!t) return;
       const peers = tasks.filter(x => x.sectionId === sectionId);
       const maxOrder = peers.length === 0 ? 0 : Math.max(...peers.map(getOrder));
       await trackWrite(addDoc(collection(db, "users", uid(), "tasks"), {
         sectionId, text: t, priority: priority || "P2",
         status: "open", createdAt: serverTimestamp(), closedAt: null,
+        dueDate: dueDate || null,
         order: maxOrder + 1
       }));
+    }
+    async function setTaskDueDate(id, dueDate) {
+      await trackWrite(updateDoc(doc(db, "users", uid(), "tasks", id), { dueDate: dueDate || null }));
     }
     async function moveTaskUp(t) {
       const peers = tasks
@@ -2439,6 +2642,18 @@
       if (!confirm(`Delete reminder "${r?.name || "this reminder"}"?`)) return;
       await trackWrite(deleteDoc(doc(db, "users", uid(), "reminders", id)));
     }
+    function todayKey() { return new Date().toISOString().slice(0, 10); }
+    function reminderAckedToday(id) {
+      const acks = settings.reminderAcks || {};
+      return acks[id] === todayKey();
+    }
+    async function ackReminder(id) {
+      await trackWrite(setDoc(
+        doc(db, "users", uid(), "settings", "main"),
+        { reminderAcks: { [id]: todayKey() } },
+        { merge: true }
+      ));
+    }
 
     // ---- Sort a section's open tasks by priority ----
     async function sortSectionByPriority(sectionId) {
@@ -2459,6 +2674,67 @@
     }
 
     // ---- Render ----
+    function formatDueDateLabel(iso) {
+      if (!iso) return "";
+      const d = new Date(iso + "T00:00:00");
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+    function dueState(iso) {
+      if (!iso) return "";
+      const d = new Date(iso + "T00:00:00");
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+      if (diff < 0) return "overdue";
+      if (diff === 0) return "today";
+      if (diff <= 3) return "soon";
+      return "future";
+    }
+    function makeDueDatePill(t) {
+      const wrap = document.createElement("div");
+      wrap.className = "due-pill-wrap";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "due-pill";
+      const input = document.createElement("input");
+      input.type = "date";
+      input.className = "due-pill-hidden-input";
+      input.value = t.dueDate || "";
+      function refresh() {
+        if (t.dueDate) {
+          btn.classList.remove("empty");
+          btn.classList.add("has-date");
+          const state = dueState(t.dueDate);
+          btn.classList.remove("overdue", "today", "soon");
+          if (state) btn.classList.add(state);
+          btn.innerHTML = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="10" height="10" rx="1.5"/><path d="M2 6h10M5 1v3M9 1v3"/></svg>' +
+            '<span>' + formatDueDateLabel(t.dueDate) + '</span>';
+          btn.title = "Due " + formatDueDateLabel(t.dueDate) + " (click to change, right-click to clear)";
+        } else {
+          btn.className = "due-pill empty";
+          btn.innerHTML = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="10" height="10" rx="1.5"/><path d="M2 6h10M5 1v3M9 1v3"/></svg>';
+          btn.title = "Add due date";
+        }
+      }
+      refresh();
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (input.showPicker) input.showPicker();
+        else input.click();
+      });
+      btn.addEventListener("contextmenu", async (e) => {
+        e.preventDefault();
+        if (t.dueDate && confirm("Clear due date?")) {
+          await setTaskDueDate(t.id, null);
+        }
+      });
+      input.addEventListener("change", async () => {
+        await setTaskDueDate(t.id, input.value || null);
+      });
+      wrap.appendChild(btn);
+      wrap.appendChild(input);
+      return wrap;
+    }
     function makePriorityPill(priority, onClick) {
       const p = (priority || "P2").toLowerCase();
       const pill = document.createElement("button");
@@ -2530,6 +2806,9 @@
         if (e.key === "Escape") { e.preventDefault(); text.value = t.text; text.blur(); }
       });
       li.appendChild(text);
+
+      // Due date pill (always rendered; empty when no date set)
+      li.appendChild(makeDueDatePill(t));
 
       const pill = makePriorityPill(t.priority, () => setTaskPriority(t.id, nextPriority(t.priority)));
       li.appendChild(pill);
@@ -2685,6 +2964,10 @@
           if (p === "P2") op.selected = true;
           sel.appendChild(op);
         });
+        const dueInp = document.createElement("input");
+        dueInp.type = "date"; dueInp.className = "task-form-due";
+        dueInp.title = "Due date (optional)";
+
         const addB = document.createElement("button");
         addB.className = "btn btn-primary"; addB.textContent = "Add";
         const cancelB = document.createElement("button");
@@ -2693,13 +2976,14 @@
         const closeForm = () => {
           card.classList.remove("adding");
           form.classList.remove("open");
-          inp.value = "";
+          inp.value = ""; dueInp.value = "";
         };
         const submit = async () => {
           const v = inp.value.trim();
           if (!v) { closeForm(); return; }
-          inp.value = "";
-          await addTask(section.id, v, sel.value);
+          const due = dueInp.value || null;
+          inp.value = ""; dueInp.value = "";
+          await addTask(section.id, v, sel.value, due);
           inp.focus();
         };
 
@@ -2716,7 +3000,7 @@
           if (e.key === "Escape") closeForm();
         });
 
-        form.appendChild(inp); form.appendChild(sel); form.appendChild(addB); form.appendChild(cancelB);
+        form.appendChild(inp); form.appendChild(sel); form.appendChild(dueInp); form.appendChild(addB); form.appendChild(cancelB);
         card.appendChild(trigger); card.appendChild(form);
       }
 
@@ -2746,6 +3030,7 @@
       // If user is mid-edit on a task, skip this render to preserve their typing.
       // The next mutation (or another listener event) will re-render.
       if (editingTaskId) return;
+      updateWelcomeVisibility();
 
       const activeRoot = $("activeSections");
       const doneRoot = $("doneSections");
@@ -2813,7 +3098,7 @@
         const lastDate = getLastAppliedDate(t.id);
         const lastSpan = document.createElement("span");
         lastSpan.className = "template-last-applied";
-        lastSpan.textContent = lastDate ? formatLastApplied(lastDate) : "Never applied";
+        lastSpan.textContent = lastDate ? "Last: " + formatLastApplied(lastDate) : "Never";
 
         const pill = makePriorityPill(t.priority, () =>
           setTemplatePriority(t.id, nextPriority(t.priority))
@@ -3253,8 +3538,10 @@
       enriched.forEach(({ r, next, days }) => {
         const card = document.createElement("div");
         card.className = "reminder-card";
-        if (days === 0) card.classList.add("is-today");
-        else if (days <= 7) card.classList.add("is-soon");
+        const isAcked = days === 0 && reminderAckedToday(r.id);
+        if (days === 0 && !isAcked) card.classList.add("is-today");
+        else if (days <= 7 && !isAcked) card.classList.add("is-soon");
+        if (isAcked) card.classList.add("is-acked");
 
         const iconWrap = document.createElement("div");
         iconWrap.className = "reminder-icon-wrap";
@@ -3314,6 +3601,22 @@
         cdSub.textContent = dateLabel;
         countdown.appendChild(cdLabel);
         countdown.appendChild(cdSub);
+
+        if (days === 0 && !isAcked) {
+          const ack = document.createElement("button");
+          ack.type = "button";
+          ack.className = "reminder-ack-btn";
+          ack.title = "Mark as seen for today";
+          ack.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg><span>Got it</span>';
+          ack.addEventListener("click", () => ackReminder(r.id));
+          countdown.appendChild(ack);
+        } else if (isAcked) {
+          const status = document.createElement("div");
+          status.className = "reminder-ack-status";
+          status.style.marginTop = "4px";
+          status.textContent = "\u2713 Got it";
+          countdown.appendChild(status);
+        }
 
         const del = document.createElement("button");
         del.className = "icon-btn";
@@ -3738,9 +4041,77 @@
       if (e.key === "Escape") closeSec();
     });
 
-    // ---- Wire up: Templates panel ----
-    const tPanel = $("templatesPanel");
-    $("templatesToggle").addEventListener("click", () => tPanel.classList.toggle("open"));
+    // ---- Wire up: Welcome card ----
+    async function dismissWelcome() {
+      $("welcomeCard").style.display = "none";
+      await trackWrite(setDoc(
+        doc(db, "users", uid(), "settings", "main"),
+        { welcomeDismissed: true },
+        { merge: true }
+      ));
+    }
+    $("dismissWelcomeBtn").addEventListener("click", dismissWelcome);
+
+    $("seedSampleBtn").addEventListener("click", async () => {
+      $("seedSampleBtn").disabled = true;
+      $("seedSampleBtn").textContent = "Adding…";
+      try {
+        const now = new Date();
+        const todayLabel = formatTodayLabel();
+        const batch = writeBatch(db);
+
+        const s1 = doc(collection(db, "users", uid(), "sections"));
+        batch.set(s1, { name: todayLabel, type: "general", createdAt: serverTimestamp() });
+        const s2 = doc(collection(db, "users", uid(), "sections"));
+        batch.set(s2, { name: "Side projects", type: "others", createdAt: serverTimestamp() });
+
+        [
+          { sec: s1.id, text: "Review your day's priorities", priority: "P0", order: 1 },
+          { sec: s1.id, text: "Quick walk after lunch", priority: "P2", order: 2 },
+          { sec: s2.id, text: "Read 20 pages of current book", priority: "P2", order: 1 }
+        ].forEach(t => {
+          const ref = doc(collection(db, "users", uid(), "tasks"));
+          batch.set(ref, { sectionId: t.sec, text: t.text, priority: t.priority, status: "open", order: t.order, createdAt: serverTimestamp(), closedAt: null });
+        });
+
+        const tpl = doc(collection(db, "users", uid(), "templates"));
+        batch.set(tpl, { text: "Daily journal entry", priority: "P3", frequency: "daily", createdAt: serverTimestamp(), order: 1 });
+
+        const n1 = doc(collection(db, "users", uid(), "notes"));
+        batch.set(n1, { title: "Welcome to Atlas", content: "This is a note. Click to edit. Try typing - or * at the start of a line for a bullet.", createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+
+        const b1 = doc(collection(db, "users", uid(), "bookmarks"));
+        batch.set(b1, { url: "https://docs.google.com", title: "Google Docs", description: "Collaborative documents", tag: "work", createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+
+        const future = new Date(now.getTime() + 30 * 86400000);
+        const r1 = doc(collection(db, "users", uid(), "reminders"));
+        batch.set(r1, { name: "Sample anniversary reminder", type: "anniversary", month: future.getMonth() + 1, day: future.getDate(), year: null, note: "Delete me when done exploring", createdAt: serverTimestamp() });
+
+        await trackWrite(batch.commit());
+        await dismissWelcome();
+      } catch (e) {
+        console.error("Seed sample failed", e);
+        alert("Couldn't add sample data: " + (e.message || e));
+      } finally {
+        $("seedSampleBtn").disabled = false;
+        $("seedSampleBtn").textContent = "Add sample data";
+      }
+    });
+
+    function updateWelcomeVisibility() {
+      const allEmpty = sections.length === 0 && notes.length === 0 && bookmarks.length === 0 && reminders.length === 0 && templates.length === 0;
+      const dismissed = !!settings.welcomeDismissed;
+      $("welcomeCard").style.display = (allEmpty && !dismissed) ? "block" : "none";
+    }
+
+    // ---- Wire up: Recurring tasks modal ----
+    const recurringModal = $("recurringModalBackdrop");
+    $("openRecurringBtn").addEventListener("click", () => {
+      recurringModal.classList.add("open");
+      setTimeout(() => $("newTemplateInput").focus(), 50);
+    });
+    $("closeRecurringModalBtn").addEventListener("click", () => recurringModal.classList.remove("open"));
+    recurringModal.addEventListener("click", (e) => { if (e.target === recurringModal) recurringModal.classList.remove("open"); });
 
     const tInput = $("newTemplateInput");
     const tPriority = $("newTemplatePriority");
@@ -3937,6 +4308,111 @@
 
     // ---- Menu items ----
     $("exportCsvBtn").addEventListener("click", () => exportCsv());
+
+    // ---- JSON backup / restore ----
+    function serializeForBackup(o) {
+      if (o === null || o === undefined) return o;
+      if (o instanceof Date) return { __ts: o.toISOString() };
+      if (typeof o === "object" && typeof o.toDate === "function") return { __ts: o.toDate().toISOString() };
+      if (Array.isArray(o)) return o.map(serializeForBackup);
+      if (typeof o === "object") {
+        const out = {};
+        for (const k of Object.keys(o)) out[k] = serializeForBackup(o[k]);
+        return out;
+      }
+      return o;
+    }
+    function deserializeFromBackup(o) {
+      if (o === null || o === undefined) return o;
+      if (typeof o === "object" && o.__ts) return new Date(o.__ts);
+      if (Array.isArray(o)) return o.map(deserializeFromBackup);
+      if (typeof o === "object") {
+        const out = {};
+        for (const k of Object.keys(o)) out[k] = deserializeFromBackup(o[k]);
+        return out;
+      }
+      return o;
+    }
+
+    function backupAllData() {
+      const payload = {
+        version: 1,
+        app: "Atlas",
+        exported: new Date().toISOString(),
+        user: { uid: currentUser?.uid, email: currentUser?.email },
+        data: {
+          sections: sections.map(serializeForBackup),
+          tasks: tasks.map(serializeForBackup),
+          notes: notes.map(serializeForBackup),
+          bookmarks: bookmarks.map(serializeForBackup),
+          reminders: reminders.map(serializeForBackup),
+          templates: templates.map(serializeForBackup),
+          settings: serializeForBackup(settings)
+        }
+      };
+      const json = JSON.stringify(payload, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `atlas-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function restoreFromBackup(file) {
+      let parsed;
+      try { parsed = JSON.parse(await file.text()); }
+      catch (e) { alert("Couldn't read backup file — invalid JSON."); return; }
+      if (!parsed || !parsed.data || typeof parsed.data !== "object") {
+        alert("Backup file is missing the expected structure."); return;
+      }
+      if (!confirm("This will REPLACE all your current data with the backup. This cannot be undone. Continue?")) return;
+
+      const collections = ["sections", "tasks", "notes", "bookmarks", "reminders", "templates"];
+      try {
+        // Delete existing data
+        for (const colName of collections) {
+          const docs = window[`__atlas_${colName}`] || (colName === "sections" ? sections : colName === "tasks" ? tasks : colName === "notes" ? notes : colName === "bookmarks" ? bookmarks : colName === "reminders" ? reminders : templates);
+          if (docs.length === 0) continue;
+          const batch = writeBatch(db);
+          docs.forEach(d => batch.delete(doc(db, "users", uid(), colName, d.id)));
+          await trackWrite(batch.commit());
+        }
+        // Write new data
+        for (const colName of collections) {
+          const items = parsed.data[colName] || [];
+          if (items.length === 0) continue;
+          const batch = writeBatch(db);
+          items.forEach(item => {
+            const id = item.id;
+            const data = deserializeFromBackup({ ...item });
+            delete data.id;
+            const ref = id ? doc(db, "users", uid(), colName, id) : doc(collection(db, "users", uid(), colName));
+            batch.set(ref, data);
+          });
+          await trackWrite(batch.commit());
+        }
+        // Settings
+        if (parsed.data.settings) {
+          await trackWrite(setDoc(doc(db, "users", uid(), "settings", "main"), deserializeFromBackup(parsed.data.settings)));
+        }
+        alert("Restore complete!");
+      } catch (e) {
+        console.error("Restore failed", e);
+        alert("Restore failed: " + (e.message || e));
+      }
+    }
+
+    $("backupJsonBtn").addEventListener("click", () => backupAllData());
+    $("restoreJsonBtn").addEventListener("click", () => $("restoreJsonInput").click());
+    $("restoreJsonInput").addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (file) restoreFromBackup(file);
+      e.target.value = ""; // reset for re-pick
+    });
     $("shortcutsBtn").addEventListener("click", () => $("modalBackdrop").classList.add("open"));
 
     // ---- Modal ----
@@ -3954,6 +4430,7 @@
       if (e.key === "Escape") {
         if (modal.classList.contains("open")) { modal.classList.remove("open"); return; }
         if (notifModal.classList.contains("open")) { notifModal.classList.remove("open"); return; }
+        if (recurringModal.classList.contains("open")) { recurringModal.classList.remove("open"); return; }
         if (sForm.classList.contains("open")) { closeSec(); return; }
         if (noteForm.classList.contains("open")) { closeNote(); return; }
         if (bmForm.classList.contains("open")) { closeBookmark(); return; }
@@ -3974,8 +4451,8 @@
           e.preventDefault(); break;
         case "r": case "R":
           if (activeTab !== "tasks") setActiveTab("tasks");
-          tPanel.classList.toggle("open");
-          if (tPanel.classList.contains("open")) tInput.focus();
+          recurringModal.classList.add("open");
+          setTimeout(() => tInput.focus(), 50);
           e.preventDefault(); break;
         case "d": case "D":
           $("themeToggle").click(); e.preventDefault(); break;
