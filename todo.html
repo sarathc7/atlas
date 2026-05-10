@@ -787,7 +787,8 @@
       align-items: center;
       padding: 12px 10px;
     }
-    .task-item + .task-item { border-top: 1px solid var(--border-strong); }
+    /* Mobile: bump the separator's left/right insets to match the wider padding */
+    .task-item:not(:last-child)::after { left: 12px; right: 12px; }
     .task-item .task-text-input {
       flex: 1 1 100%;
       order: 2;
@@ -1037,12 +1038,22 @@
 
   /* Task list */
   .task-list { list-style: none; }
-  /* Subtle separator between adjacent tasks in a section */
-  .task-item + .task-item { border-top: 1px solid var(--border); }
+  /* Visible separator between adjacent tasks. Uses an absolutely positioned
+     pseudo-element (not border-top) so it's not eaten by border-radius and
+     not hidden by hover/done/skipped backgrounds. */
+  .task-item { position: relative; }
+  .task-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 14px; right: 14px; bottom: 0;
+    height: 1px;
+    background: var(--border-strong);
+    pointer-events: none;
+  }
 
   .task-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 9px 10px; margin: 0 -10px;
+    padding: 10px; margin: 0 -10px;
     border-radius: 7px; transition: background 0.12s;
     border-left: 2px solid transparent;
   }
