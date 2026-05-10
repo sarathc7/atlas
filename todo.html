@@ -806,6 +806,38 @@
     .task-item .task-time       { font-size: 10.5px; }
   }
 
+  /* On mobile, wrap the section header so the name gets its own row and
+     [type badge | meta | sort | delete] go on a second row — the × is no
+     longer hidden behind "Sort by priority" when the name is long. */
+  @media (max-width: 600px) {
+    .section-head {
+      flex-wrap: wrap;
+      column-gap: 8px;
+      row-gap: 6px;
+      align-items: center;
+    }
+    .section-head .section-marker { order: 1; }
+    .section-head .section-name   { order: 2; flex: 1 1 calc(100% - 16px); min-width: 0; font-size: 14px; }
+    .section-head .section-type-badge { order: 3; }
+    .section-head .section-meta       { order: 4; }
+    .section-head .section-sort-btn   { order: 5; margin-left: auto; }
+    .section-head .section-clear-btn  { order: 5; margin-left: auto; }
+    .section-head .icon-btn           { order: 6; padding: 6px 10px; font-size: 18px; }
+
+    /* Compact "Sort by priority" → icon-only on phones (the title attribute
+       still says "Reorder open tasks by priority") */
+    .section-sort-btn {
+      font-size: 0;
+      padding: 4px 7px;
+    }
+    .section-sort-btn::before {
+      content: "\2195";  /* ↕ */
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 700;
+    }
+  }
+
   .templates-panel { border-bottom: 1px solid var(--border); background: var(--surface); }
   .templates-toggle {
     width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -4482,7 +4514,6 @@
         case "r": case "R":
           if (activeTab !== "tasks") setActiveTab("tasks");
           recurringModal.classList.add("open");
-          setTimeout(() => tInput.focus(), 50);
           e.preventDefault(); break;
         case "d": case "D":
           $("themeToggle").click(); e.preventDefault(); break;
