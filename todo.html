@@ -279,7 +279,8 @@
   .tab-bar::-webkit-scrollbar { display: none; }
   .tab-btn {
     flex: 1 1 0;
-    min-width: 60px;
+    min-width: 0;
+    max-width: 100%;
     background: none; border: none;
     color: var(--text-secondary);
     font-family: inherit; font-size: 10.5px; font-weight: 600;
@@ -289,7 +290,8 @@
     display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 5px;
     transition: all 0.15s;
-    white-space: nowrap; flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
     letter-spacing: 0.02em;
   }
   /* The colored icon bubble — ALWAYS visible, color matches the tab */
@@ -301,7 +303,7 @@
     border: 1px solid transparent;
   }
   .tab-btn .tab-icon { width: 22px; height: 22px; transition: color 0.15s; }
-  .tab-btn .tab-label { font-size: 10.5px; line-height: 1; }
+  .tab-btn .tab-label { font-size: 10.5px; line-height: 1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
   .tab-btn .tab-count {
     margin-top: 1px;
     background: rgba(0,0,0,0.18); color: currentColor;
@@ -353,8 +355,8 @@
 
   /* === MOBILE: bottom-fixed nav === */
   @media (max-width: 600px) {
-    body { padding: 16px 0 96px 0; }
-    .container { border-radius: 0; border-left: none; border-right: none; min-height: calc(100vh - 16px - 96px); }
+    body { padding: calc(env(safe-area-inset-top) + 12px) 0 96px 0; }
+    .container { border-radius: 0; border-left: none; border-right: none; min-height: calc(100vh - env(safe-area-inset-top) - 12px - 96px); }
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       border-top: 1px solid var(--border); border-bottom: none;
@@ -362,10 +364,12 @@
       box-shadow: 0 -2px 16px rgba(0,0,0,0.22);
       z-index: 100;
     }
-    .tab-btn { font-size: 9.5px; padding: 4px 2px; }
-    .tab-btn .tab-icon-wrap { width: 44px; height: 30px; border-radius: 12px; }
-    .tab-btn .tab-icon { width: 20px; height: 20px; }
+    .tab-btn { font-size: 9px; padding: 4px 1px; gap: 3px; }
+    .tab-btn .tab-icon-wrap { width: 100%; max-width: 44px; height: 28px; border-radius: 11px; }
+    .tab-btn .tab-icon { width: 19px; height: 19px; }
+    .tab-btn .tab-label { font-size: 9px; }
     .tab-btn .tab-count { display: none; }
+    .tab-bar { padding-left: 4px; padding-right: 4px; gap: 0; justify-content: stretch; }
   }
 
 
@@ -774,6 +778,34 @@
     .template-item .icon-btn { padding: 4px 6px; }
   }
 
+  /* On mobile, stack task rows: title on its own line, action chips below */
+  @media (max-width: 600px) {
+    .task-item {
+      flex-wrap: wrap;
+      column-gap: 6px;
+      row-gap: 6px;
+      align-items: center;
+    }
+    .task-item .task-text-input {
+      flex: 1 1 100%;
+      order: 2;
+      font-size: 14px;
+      line-height: 1.35;
+      word-break: break-word;
+      white-space: normal;
+      width: 100%;
+    }
+    .task-item .status-buttons { order: 1; }
+    .task-item .due-pill-wrap   { order: 3; }
+    .task-item .priority-pill   { order: 4; }
+    .task-item .task-time       { order: 5; margin-left: auto; }
+    .task-item .move-btn        { order: 6; }
+    .task-item .icon-btn        { order: 7; }
+    .task-item .due-pill        { font-size: 10.5px; padding: 2px 6px; }
+    .task-item .priority-pill   { font-size: 10px; padding: 2px 6px; }
+    .task-item .task-time       { font-size: 10.5px; }
+  }
+
   .templates-panel { border-bottom: 1px solid var(--border); background: var(--surface); }
   .templates-toggle {
     width: 100%; display: flex; align-items: center; justify-content: space-between;
@@ -922,9 +954,10 @@
   .template-item .icon-btn { opacity: 1; }
   .icon-btn:hover { color: var(--danger); background: var(--danger-soft); }
 
-  /* Touch devices: always show icon buttons */
+  /* Touch devices: always show icon buttons (no hover state to reveal them) */
   @media (hover: none) {
-    .icon-btn { opacity: 0.55; }
+    .icon-btn { opacity: 1; }
+    .due-pill.empty { opacity: 1; }
   }
 
   /* Move (reorder) buttons — accent on hover, not danger */
@@ -4027,10 +4060,7 @@
       if (!v) { closeSec(); return; }
       sInput.value = "";
       await addSection(v, selectedSectionType);
-      // Repopulate today's date for next add (in case user wants to add multiple)
-      sInput.value = formatTodayLabel();
-      sInput.select();
-      sInput.focus();
+      closeSec();
     };
     sToggle.addEventListener("click", openSec);
     sAdd.addEventListener("click", submitSec);
@@ -4158,9 +4188,10 @@
       const t = noteTitle.value.trim();
       const c = noteContent.value.trim();
       if (!t && !c) { closeNote(); return; }
+      const _t = t, _c = c;
       noteTitle.value = ""; noteContent.value = "";
-      await addNote(t, c);
-      noteTitle.focus();
+      await addNote(_t, _c);
+      closeNote();
     };
     noteToggle.addEventListener("click", openNote);
     noteAdd.addEventListener("click", submitNote);
@@ -4206,8 +4237,7 @@
         description: bmDesc.value,
         tag: bmTag.value
       });
-      bmUrl.value = ""; bmTitle.value = ""; bmTag.value = ""; bmDesc.value = "";
-      bmUrl.focus();
+      closeBookmark();
     };
     bmToggle.addEventListener("click", openBookmark);
     $("addBookmarkBtn").addEventListener("click", submitBookmark);
