@@ -15,6 +15,22 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg" />
 <link rel="apple-touch-icon" href="icon.svg" />
 
+<script>
+  // Tag the <html> element if we are running as an installed PWA
+  // (home-screen launch). CSS targets html.is-standalone to guarantee
+  // status-bar-safe top padding on iOS and Android.
+  (function () {
+    var mm = window.matchMedia;
+    var standalone =
+      (mm && mm("(display-mode: standalone)").matches) ||
+      (mm && mm("(display-mode: fullscreen)").matches) ||
+      (mm && mm("(display-mode: minimal-ui)").matches) ||
+      window.navigator.standalone === true ||
+      (document.referrer || "").indexOf("android-app://") === 0;
+    if (standalone) document.documentElement.classList.add("is-standalone");
+  })();
+</script>
+
 <style>
   :root {
     /* Surfaces */
@@ -363,10 +379,17 @@
      bar overlays the web view. On notch iPhones env(safe-area-inset-top)
      reports ~44px; on non-notch iPhones (and some Android PWAs) it can
      report 0 even though the ~20px status bar is still there. Use max()
-     to guarantee at least 44px of top padding in standalone mode. */
+     to guarantee at least 44px of top padding in standalone mode.
+
+     We use BOTH the CSS media query AND a JS-applied html.is-standalone
+     class, with !important, so the rule wins on every platform/order. */
   @media (display-mode: standalone) and (max-width: 600px) {
-    body { padding-top: max(calc(env(safe-area-inset-top) + 12px), 44px); }
+    body { padding-top: max(calc(env(safe-area-inset-top) + 12px), 44px) !important; }
     .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
+  }
+  @media (max-width: 600px) {
+    html.is-standalone body { padding-top: max(calc(env(safe-area-inset-top) + 12px), 44px) !important; }
+    html.is-standalone .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
   }
 
   /* Catch-all for the closing brace of the original max-width: 600px block
