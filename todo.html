@@ -151,7 +151,16 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body {
+    height: 100%;
+    /* Force body to fill the full dynamic viewport height. Without this,
+       iOS PWA positions `position: fixed` elements relative to CONTENT
+       bottom (not viewport bottom) when the body is shorter than the
+       viewport — exactly what creates the floating nav on empty Notes,
+       Bookmarks, or Reminders tabs. */
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
 
   body {
     font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", Tahoma, Verdana, sans-serif;
