@@ -3,7 +3,7 @@
 // Lets Firebase / Google APIs handle their own caching (Firestore has built-in offline persistence).
 // Also handles notification clicks — opens the app or focuses an existing tab.
 
-const CACHE = "atlas-v21";
+const CACHE = "atlas-v23";
 const ASSETS = ["./", "./todo.html", "./manifest.json", "./icon.svg"];
 
 self.addEventListener("install", (e) => {
