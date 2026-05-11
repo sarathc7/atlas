@@ -19,9 +19,12 @@
   // Tag the <html> element if we are running as an installed PWA
   // (home-screen launch). CSS targets html.is-standalone to guarantee
   // status-bar-safe top padding on iOS and Android.
+  // ?standalone=1 in the URL forces standalone mode — used by the
+  // desktop mobile-preview.html so we can debug without a phone.
   (function () {
     var mm = window.matchMedia;
-    var standalone =
+    var qs = (window.location.search || "").indexOf("standalone=1") >= 0;
+    var standalone = qs ||
       (mm && mm("(display-mode: standalone)").matches) ||
       (mm && mm("(display-mode: fullscreen)").matches) ||
       (mm && mm("(display-mode: minimal-ui)").matches) ||
@@ -392,21 +395,13 @@
     html.is-standalone .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
   }
 
-  /* Mobile: make the container + each view a flex column so the single
-     .pane in Notes/Bookmarks/Reminders stretches to fill the area
-     between the new-X-bar and the bottom nav. Without this, short
-     lists leave visible empty container space below them. */
+  /* Mobile: ensure the bottom nav has at least 24px of padding-bottom
+     so the icons clear the iPhone home indicator even on the iOS quirk
+     where env(safe-area-inset-bottom) reports 0 for short, non-scrolling
+     pages (which is exactly what triggers the misaligned nav on N/B/R). */
   @media (max-width: 600px) {
-    .container { display: flex; flex-direction: column; }
-    #tasksView, #notesView, #bookmarksView, #remindersView, #profileView {
-      flex: 1;
-      flex-direction: column;
-      min-height: 0;
-    }
-    #notesView > .pane,
-    #bookmarksView > .pane,
-    #remindersView > .pane {
-      flex: 1;
+    .tab-bar {
+      padding-bottom: max(calc(10px + env(safe-area-inset-bottom)), 44px) !important;
     }
   }
 
@@ -3908,7 +3903,7 @@
       TABS.forEach(t => {
         const view = $(TAB_VIEWS[t]);
         const btn = $(TAB_BTNS[t]);
-        if (view) view.style.display = (t === tab) ? "flex" : "none";
+        if (view) view.style.display = (t === tab) ? "block" : "none";
         if (btn) btn.classList.toggle("active", t === tab);
         document.body.classList.remove("tab-" + t);
       });
