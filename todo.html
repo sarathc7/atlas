@@ -392,6 +392,24 @@
     html.is-standalone .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
   }
 
+  /* Mobile: make the container + each view a flex column so the single
+     .pane in Notes/Bookmarks/Reminders stretches to fill the area
+     between the new-X-bar and the bottom nav. Without this, short
+     lists leave visible empty container space below them. */
+  @media (max-width: 600px) {
+    .container { display: flex; flex-direction: column; }
+    #tasksView, #notesView, #bookmarksView, #remindersView, #profileView {
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+    }
+    #notesView > .pane,
+    #bookmarksView > .pane,
+    #remindersView > .pane {
+      flex: 1;
+    }
+  }
+
   /* Catch-all for the closing brace of the original max-width: 600px block
      so the existing tab-bar / tab-btn rules below still parse. */
   @media (max-width: 600px) {
@@ -3890,7 +3908,7 @@
       TABS.forEach(t => {
         const view = $(TAB_VIEWS[t]);
         const btn = $(TAB_BTNS[t]);
-        if (view) view.style.display = (t === tab) ? "block" : "none";
+        if (view) view.style.display = (t === tab) ? "flex" : "none";
         if (btn) btn.classList.toggle("active", t === tab);
         document.body.classList.remove("tab-" + t);
       });
