@@ -357,6 +357,21 @@
   @media (max-width: 600px) {
     body { padding: calc(env(safe-area-inset-top) + 12px) 0 96px 0; }
     .container { border-radius: 0; border-left: none; border-right: none; min-height: calc(100vh - env(safe-area-inset-top) - 12px - 96px); }
+  }
+
+  /* When launched as an installed PWA (home-screen icon), the iOS status
+     bar overlays the web view. On notch iPhones env(safe-area-inset-top)
+     reports ~44px; on non-notch iPhones (and some Android PWAs) it can
+     report 0 even though the ~20px status bar is still there. Use max()
+     to guarantee at least 44px of top padding in standalone mode. */
+  @media (display-mode: standalone) and (max-width: 600px) {
+    body { padding-top: max(calc(env(safe-area-inset-top) + 12px), 44px); }
+    .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
+  }
+
+  /* Catch-all for the closing brace of the original max-width: 600px block
+     so the existing tab-bar / tab-btn rules below still parse. */
+  @media (max-width: 600px) {
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       border-top: 1px solid var(--border); border-bottom: none;
@@ -1680,8 +1695,8 @@
     .section-name { font-size: 13px; }
   }
 
-  /* PWA standalone tweaks */
-  @media (display-mode: standalone) { body { padding: 0; } }
+  /* PWA standalone padding handled earlier in this stylesheet — see the
+     `@media (display-mode: standalone) and (max-width: 600px)` rule above. */
 </style>
 </head>
 <body>
