@@ -1698,8 +1698,12 @@
 
   /* Mobile */
   @media (max-width: 600px) {
-    body { padding: 0; font-size: 13px; }
-    .container { border-radius: 0; border-left: none; border-right: none; border-top: none; min-height: 100vh; }
+    /* font-size only — body padding + container min-height are owned by
+       the earlier safe-area-aware rules. Setting `padding: 0` or
+       `min-height: 100vh` here re-introduces a visible empty gap above
+       the bottom nav for short views (Notes/Bookmarks/Reminders). */
+    body { font-size: 13px; }
+    .container { border-radius: 0; border-left: none; border-right: none; border-top: none; }
     header { padding: 16px 18px; flex-wrap: wrap; }
     .new-section-bar, .new-note-bar, .new-bookmark-bar, .new-reminder-bar, .bookmark-filters, .pane, footer, .templates-toggle { padding-left: 18px; padding-right: 18px; }
     .templates-content { padding-left: 18px; padding-right: 18px; }
@@ -1762,6 +1766,7 @@
         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
       </svg></span>
       <span class="tab-label">Tasks</span>
+      <span class="tab-count" aria-hidden="true" style="visibility: hidden;">0</span>
     </button>
     <button class="tab-btn" id="tabNotesBtn" type="button" data-tab="notes">
       <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -1795,6 +1800,7 @@
         </svg>
       </span>
       <span class="tab-label">Profile</span>
+      <span class="tab-count" aria-hidden="true" style="visibility: hidden;">0</span>
     </button>
   </nav>
 
