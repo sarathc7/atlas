@@ -1258,6 +1258,39 @@
     padding-bottom: 10px; margin-bottom: 6px;
     border-bottom: 1px solid var(--border);
   }
+  /* Per-section collapse chevron (click toggles .section-card.is-collapsed) */
+  .section-chevron {
+    background: none; border: none; cursor: pointer;
+    padding: 4px 6px; margin: -4px 4px -4px -2px;
+    border-radius: 5px;
+    color: var(--text-muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+  .section-chevron svg {
+    width: 12px; height: 12px; display: block;
+    transition: transform 0.2s ease;
+  }
+  /* Expanded: arrow points down (rotated 90 from default right) */
+  .section-card:not(.is-collapsed) .section-chevron svg {
+    transform: rotate(90deg);
+  }
+  .section-chevron:hover { color: var(--text); background: var(--surface-elevated); }
+
+  /* Collapsed section: hide the body but keep the head visible */
+  .section-card.is-collapsed .task-list,
+  .section-card.is-collapsed .add-task-trigger,
+  .section-card.is-collapsed .add-task-form,
+  .section-card.is-collapsed .section-clear-btn-wrap {
+    display: none;
+  }
+  .section-card.is-collapsed .section-head {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
   .section-marker {
     width: 4px; height: 18px; border-radius: 3px; background: var(--accent);
     flex-shrink: 0; box-shadow: 0 0 8px rgba(129, 140, 248, 0.4);
@@ -3663,15 +3696,50 @@
       return li;
     }
 
+    // ---- Per-section collapse state (localStorage) ----
+    function getSectionCollapseMap() {
+      try { return JSON.parse(localStorage.getItem("atlas.sectionsCollapsed") || "{}"); }
+      catch (e) { return {}; }
+    }
+    function isSectionCollapsed(sectionId, mode) {
+      const map = getSectionCollapseMap();
+      if (Object.prototype.hasOwnProperty.call(map, sectionId)) return !!map[sectionId];
+      // Defaults: closed sections (in History) start collapsed,
+      // active sections start expanded.
+      return mode === "done";
+    }
+    function setSectionCollapsed(sectionId, collapsed) {
+      const map = getSectionCollapseMap();
+      map[sectionId] = !!collapsed;
+      localStorage.setItem("atlas.sectionsCollapsed", JSON.stringify(map));
+    }
+
     function makeSectionCard(section, sectionTasks, mode) {
       const card = document.createElement("div");
       const colorCls = sectionColorClass(section.id);
+      const initiallyCollapsed = isSectionCollapsed(section.id, mode);
       card.className = "section-card " + colorCls
         + (mode === "done" ? " is-done" : "")
-        + (section.pinned ? " is-pinned" : "");
+        + (section.pinned ? " is-pinned" : "")
+        + (initiallyCollapsed ? " is-collapsed" : "");
 
       const head = document.createElement("div");
       head.className = "section-head";
+
+      // Chevron toggles the section card's .is-collapsed class.
+      const chev = document.createElement("button");
+      chev.type = "button";
+      chev.className = "section-chevron";
+      chev.title = "Collapse / expand section";
+      chev.setAttribute("aria-expanded", initiallyCollapsed ? "false" : "true");
+      chev.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3 L8 6 L4 9"/></svg>';
+      chev.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const nowCollapsed = card.classList.toggle("is-collapsed");
+        chev.setAttribute("aria-expanded", nowCollapsed ? "false" : "true");
+        setSectionCollapsed(section.id, nowCollapsed);
+      });
+      head.appendChild(chev);
 
       const marker = document.createElement("div");
       marker.className = "section-marker";
