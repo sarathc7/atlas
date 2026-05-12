@@ -73,6 +73,7 @@
     --c-violet: #c084fc;
     --c-rose: #fb7185;
     --c-teal: #2dd4bf;
+    --c-orange: #fb923c;
 
     --p0: #f87171;
     --p1: #fb923c;
@@ -115,6 +116,7 @@
     --c-violet: #7e22ce;
     --c-rose: #e11d48;
     --c-teal: #0d9488;
+    --c-orange: #ea580c;
     --p0: #dc2626;
     --p1: #ea580c;
     --p2: #2563eb;
@@ -344,12 +346,14 @@
   .tab-btn[data-tab="notes"] .tab-icon-wrap     { background: rgba(251,191,36,0.14);  border-color: rgba(251,191,36,0.18); }
   .tab-btn[data-tab="bookmarks"] .tab-icon-wrap { background: rgba(34,211,238,0.14);  border-color: rgba(34,211,238,0.18); }
   .tab-btn[data-tab="reminders"] .tab-icon-wrap { background: rgba(244,114,182,0.14); border-color: rgba(244,114,182,0.18); }
+  .tab-btn[data-tab="tickets"] .tab-icon-wrap   { background: rgba(251,146,60,0.14);  border-color: rgba(251,146,60,0.18); }
   .tab-btn[data-tab="profile"] .tab-icon-wrap   { background: rgba(192,132,252,0.14); border-color: rgba(192,132,252,0.18); }
 
   .tab-btn[data-tab="tasks"]     .tab-icon { color: var(--c-indigo); }
   .tab-btn[data-tab="notes"]     .tab-icon { color: var(--c-amber); }
   .tab-btn[data-tab="bookmarks"] .tab-icon { color: var(--c-cyan); }
   .tab-btn[data-tab="reminders"] .tab-icon { color: var(--c-pink); }
+  .tab-btn[data-tab="tickets"]   .tab-icon { color: var(--c-orange); }
   .tab-btn[data-tab="profile"]   .tab-icon { color: var(--c-violet); }
 
   /* Hover (inactive) — bubble gets a touch more saturated */
@@ -357,11 +361,13 @@
   .tab-btn[data-tab="notes"]:not(.active):hover     .tab-icon-wrap { background: rgba(251,191,36,0.28);  border-color: rgba(251,191,36,0.4); }
   .tab-btn[data-tab="bookmarks"]:not(.active):hover .tab-icon-wrap { background: rgba(34,211,238,0.28);  border-color: rgba(34,211,238,0.4); }
   .tab-btn[data-tab="reminders"]:not(.active):hover .tab-icon-wrap { background: rgba(244,114,182,0.28); border-color: rgba(244,114,182,0.4); }
+  .tab-btn[data-tab="tickets"]:not(.active):hover   .tab-icon-wrap { background: rgba(251,146,60,0.28);  border-color: rgba(251,146,60,0.4); }
   .tab-btn[data-tab="profile"]:not(.active):hover   .tab-icon-wrap { background: rgba(192,132,252,0.28); border-color: rgba(192,132,252,0.4); }
   .tab-btn[data-tab="tasks"]:not(.active):hover     { color: var(--c-indigo); }
   .tab-btn[data-tab="notes"]:not(.active):hover     { color: var(--c-amber); }
   .tab-btn[data-tab="bookmarks"]:not(.active):hover { color: var(--c-cyan); }
   .tab-btn[data-tab="reminders"]:not(.active):hover { color: var(--c-pink); }
+  .tab-btn[data-tab="tickets"]:not(.active):hover   { color: var(--c-orange); }
   .tab-btn[data-tab="profile"]:not(.active):hover   { color: var(--c-violet); }
 
   /* ACTIVE — fully saturated bubble, contrast-color icon, colored label, soft glow */
@@ -377,6 +383,9 @@
   .tab-btn[data-tab="reminders"].active { color: var(--c-pink); }
   .tab-btn[data-tab="reminders"].active .tab-icon-wrap { background: var(--c-pink); border-color: var(--c-pink); box-shadow: 0 4px 12px rgba(244,114,182,0.4); }
   .tab-btn[data-tab="reminders"].active .tab-icon { color: #fff; }
+  .tab-btn[data-tab="tickets"].active   { color: var(--c-orange); }
+  .tab-btn[data-tab="tickets"].active   .tab-icon-wrap { background: var(--c-orange); border-color: var(--c-orange); box-shadow: 0 4px 12px rgba(251,146,60,0.4); }
+  .tab-btn[data-tab="tickets"].active   .tab-icon { color: #fff; }
   .tab-btn[data-tab="profile"].active   { color: var(--c-violet); }
   .tab-btn[data-tab="profile"].active   .tab-icon-wrap { background: var(--c-violet); border-color: var(--c-violet); box-shadow: 0 4px 12px rgba(192,132,252,0.4); }
   .tab-btn[data-tab="profile"].active   .tab-icon { color: #fff; }
@@ -432,6 +441,177 @@
     .tab-bar { padding-left: 4px; padding-right: 4px; gap: 0; justify-content: stretch; }
   }
 
+
+  /* Tickets filter + sort controls row */
+  .ticket-controls {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 10px 32px 14px; align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-soft);
+  }
+  .ticket-controls .tcontrol {
+    display: inline-flex; flex-direction: column; gap: 2px;
+    font-size: 10px; color: var(--text-muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .ticket-controls .tcontrol-label { padding-left: 2px; }
+  .ticket-controls .tcontrol-select {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--text); font-family: inherit;
+    font-size: 12px; font-weight: 600;
+    padding: 5px 24px 5px 8px;
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 10 6%27 fill=%27none%27 stroke=%27%23a1a1aa%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M1 1l4 4 4-4%27/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 8px;
+  }
+  .ticket-controls .tcontrol-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .ticket-controls .tcontrol-dir,
+  .ticket-controls .tcontrol-clear {
+    background: var(--surface-elevated); border: 1px solid var(--border-strong);
+    color: var(--text); font-family: inherit; font-size: 12px; font-weight: 600;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    align-self: flex-end;
+    transition: all 0.15s;
+  }
+  .ticket-controls .tcontrol-dir:hover,
+  .ticket-controls .tcontrol-clear:hover {
+    background: var(--surface); border-color: var(--accent);
+  }
+  .ticket-controls .tcontrol-clear { color: var(--text-secondary); }
+  @media (max-width: 600px) {
+    .ticket-controls { padding-left: 18px; padding-right: 18px; gap: 6px; }
+    .ticket-controls .tcontrol-select { font-size: 12px; padding: 4px 20px 4px 7px; }
+    .ticket-controls .tcontrol-dir,
+    .ticket-controls .tcontrol-clear { padding: 4px 9px; font-size: 12px; }
+  }
+
+  /* Pane-action small button (sort, export) used in the Tickets pane head */
+  .pane-action-btn {
+    background: var(--surface-elevated); border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: inherit; font-size: 11px; font-weight: 600;
+    padding: 4px 9px; border-radius: 6px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    transition: all 0.15s;
+  }
+  .pane-action-btn svg { width: 11px; height: 11px; display: block; }
+  .pane-action-btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface); }
+
+  /* Category badge — colored per credit / debit / others */
+  .ticket-category-badge {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 2px 7px; border-radius: 4px;
+    background: var(--surface-elevated); color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .ticket-category-badge.credit {
+    background: rgba(52,211,153,0.10); color: var(--c-emerald);
+    border-color: rgba(52,211,153,0.30);
+  }
+  .ticket-category-badge.debit {
+    background: rgba(251,113,133,0.10); color: var(--c-rose);
+    border-color: rgba(251,113,133,0.30);
+  }
+  .ticket-category-badge.others {
+    background: var(--surface-elevated); color: var(--text-secondary);
+    border-color: var(--border);
+  }
+
+  /* ======================================================================
+     TICKETS
+     ====================================================================== */
+  .new-ticket-bar {
+    padding: 14px 32px; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .new-ticket-toggle {
+    background: none; border: none; color: var(--c-orange);
+    font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 0;
+    display: inline-flex; align-items: center; gap: 8px; transition: color 0.15s;
+    font-family: inherit;
+  }
+  .new-ticket-toggle .plus {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--c-orange); border-radius: 4px;
+    color: var(--c-orange); font-weight: 700;
+  }
+  .new-ticket-bar.open .new-ticket-toggle { display: none; }
+  .new-ticket-form { display: none; flex-direction: column; gap: 12px; padding-top: 4px; }
+  .new-ticket-bar.open .new-ticket-form { display: flex; }
+
+  .ticket-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--c-orange);
+    border-radius: 8px; padding: 14px 16px; margin-bottom: 10px;
+    display: flex; flex-direction: column; gap: 6px;
+    transition: border-color 0.15s;
+  }
+  .ticket-card:hover { border-color: var(--border-strong); }
+  .ticket-card .ticket-head { display: flex; align-items: center; gap: 10px; }
+  .ticket-card .ticket-subject {
+    flex: 1; font-size: 14px; font-weight: 700; color: var(--text);
+    line-height: 1.35; word-break: break-word;
+  }
+  .ticket-card .ticket-meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    font-size: 11px; color: var(--text-muted);
+  }
+  .ticket-type-badge {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 2px 7px; border-radius: 4px;
+    background: var(--surface-elevated); color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .ticket-type-badge.internal {
+    background: rgba(34,211,238,0.10); color: var(--c-cyan);
+    border-color: rgba(34,211,238,0.30);
+  }
+  .ticket-type-badge.external {
+    background: rgba(251,146,60,0.12); color: var(--c-orange);
+    border-color: rgba(251,146,60,0.30);
+  }
+  .ticket-age-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; line-height: 1.4;
+    background: var(--surface-elevated); color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .ticket-age-pill.warning {
+    background: rgba(251,191,36,0.10); color: var(--c-amber);
+    border-color: rgba(251,191,36,0.35);
+  }
+  .ticket-age-pill.critical {
+    background: var(--danger-soft); color: var(--p0);
+    border-color: rgba(248,113,113,0.40);
+  }
+  .ticket-note {
+    font-size: 13px; color: var(--text-secondary); margin-top: 2px;
+    line-height: 1.5; word-break: break-word;
+  }
+  .ticket-card .icon-btn { opacity: 0; }
+  .ticket-card:hover .icon-btn { opacity: 1; }
+  @media (hover: none) {
+    .ticket-card .icon-btn { opacity: 1; }
+  }
+
+  /* Note URL — small inline icon next to the title (cyan link glyph). */
+  .note-url-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    color: var(--c-cyan); text-decoration: none;
+    border-radius: 5px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .note-url-chip svg { width: 13px; height: 13px; display: block; }
+  .note-url-chip:hover {
+    background: rgba(34,211,238,0.12);
+  }
 
   /* Profile view styles */
   .profile-page {
@@ -568,6 +748,11 @@
     background-image:
       radial-gradient(ellipse 70% 60% at 15% 0%, rgba(244, 114, 182, 0.10), transparent 60%),
       radial-gradient(ellipse 70% 60% at 85% 100%, rgba(192, 132, 252, 0.07), transparent 60%);
+  }
+  body.tab-tickets {
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 0%, rgba(251, 146, 60, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 100%, rgba(244, 63, 94, 0.06), transparent 60%);
   }
   /* Light theme — softer values tuned for the lighter base */
   body.theme-light.tab-tasks {
@@ -899,9 +1084,11 @@
     .section-head .section-name   { order: 2; flex: 1 1 calc(100% - 16px); min-width: 0; font-size: 14px; }
     .section-head .section-type-badge { order: 3; }
     .section-head .section-meta       { order: 4; }
-    .section-head .section-sort-btn   { order: 5; margin-left: auto; }
-    .section-head .section-clear-btn  { order: 5; margin-left: auto; }
-    .section-head .icon-btn           { order: 6; padding: 6px 10px; font-size: 18px; }
+    .section-head .pin-btn            { order: 5; }
+    .section-head .section-sort-btn   { order: 6; margin-left: auto; }
+    .section-head .section-clear-btn  { order: 6; margin-left: auto; }
+    .section-head .edit-btn           { order: 7; }
+    .section-head .icon-btn           { order: 8; padding: 6px 10px; font-size: 18px; }
 
     /* Compact "Sort by priority" → icon-only on phones (the title attribute
        still says "Reorder open tasks by priority") */
@@ -958,6 +1145,30 @@
 
   /* Pane */
   .pane { padding: 24px 32px; }
+
+  /* Collapsible pane (used by History in Tasks tab) */
+  .pane.is-collapsible .pane-head {
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.15s;
+  }
+  .pane.is-collapsible .pane-head:hover { opacity: 0.85; }
+  .pane.is-collapsible .collapse-chevron {
+    width: 11px; height: 11px;
+    margin-left: 4px;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    vertical-align: middle;
+  }
+  /* Expanded state: chevron points down */
+  .pane.is-collapsible:not(.is-collapsed) .collapse-chevron {
+    transform: rotate(90deg);
+  }
+  /* Collapsed state: hide the body */
+  .pane.is-collapsible.is-collapsed #doneSections { display: none; }
+  .pane.is-collapsible.is-collapsed .pane-head { padding-bottom: 0; }
+  /* Trim padding when collapsed so the pane stays compact */
+  .pane.is-collapsible.is-collapsed { padding-bottom: 18px; }
   .pane + .pane { border-top: 1px solid var(--border); background: var(--surface-soft); }
   .pane-head {
     display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
@@ -1087,7 +1298,8 @@
   .section-head:hover .edit-btn,
   .task-item:hover .edit-btn,
   .note-card:hover .edit-btn,
-  .bookmark-card:hover .edit-btn { opacity: 1; }
+  .bookmark-card:hover .edit-btn,
+  .ticket-card:hover .edit-btn { opacity: 1; }
 
   /* Touch devices: always show edit + icon buttons (no hover state) */
   @media (hover: none) {
@@ -1113,6 +1325,35 @@
     background: transparent !important;
   }
 
+  /* Pin/unpin button for sections */
+  .pin-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 4px 6px; border-radius: 5px;
+    color: var(--text-muted);
+    line-height: 1; transition: all 0.15s;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .pin-btn svg { width: 14px; height: 14px; display: block; }
+  .pin-btn:hover { color: var(--c-amber); background: rgba(251,191,36,0.12); }
+  .pin-btn.is-pinned { color: var(--c-amber); }
+  .pin-btn.is-pinned:hover { color: var(--text-muted); background: rgba(0,0,0,0.1); }
+
+  /* Pinned section visual indicator: subtle amber border + pin glyph */
+  .section-card.is-pinned {
+    border-color: rgba(251,191,36,0.30);
+    box-shadow: 0 0 0 1px rgba(251,191,36,0.08) inset;
+  }
+  .section-card.is-pinned .section-marker::after {
+    content: ""; display: block;
+    position: absolute; top: -4px; right: -10px;
+    width: 10px; height: 10px;
+    background: var(--c-amber);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(251,191,36,0.6);
+  }
+  .section-card.is-pinned .section-marker { position: relative; }
+
   /* Move (reorder) buttons — accent on hover, not danger */
   .move-btn { color: var(--text-muted); }
   .move-btn:hover { color: var(--accent); background: var(--accent-soft); }
@@ -1137,9 +1378,53 @@
   .task-item {
     display: flex; align-items: center; gap: 10px;
     padding: 10px; margin: 0 -10px;
-    border-radius: 7px; transition: background 0.12s;
+    border-radius: 7px;
     border-left: 2px solid transparent;
+    max-height: 500px;
+    transition:
+      background 0.15s ease,
+      transform 0.2s ease,
+      opacity 0.25s ease,
+      max-height 0.25s ease,
+      padding-top 0.25s ease,
+      padding-bottom 0.25s ease,
+      margin-top 0.25s ease,
+      margin-bottom 0.25s ease;
   }
+
+  /* Task-completion animation states (see status-button handler) */
+  .task-item.completing {
+    background: var(--success-soft);
+    transform: translateX(6px);
+    pointer-events: none;
+  }
+  .task-item.completing .task-text-input {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+  }
+  .task-item.skipping {
+    background: var(--danger-soft);
+    transform: translateX(-6px);
+    pointer-events: none;
+  }
+  .task-item.skipping .task-text-input {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    opacity: 0.6;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+  .task-item.exiting {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .task-item.exiting::after { display: none; }
   .task-item:hover { background: var(--accent-soft); }
   .task-item.done { background: var(--success-soft); border-left-color: var(--success); }
   .task-item.done .task-text-input { text-decoration: line-through; color: var(--text-muted); }
@@ -1417,6 +1702,20 @@
     border: 1px solid var(--accent-border);
   }
   .new-note-form { display: none; flex-direction: column; gap: 10px; }
+  .add-link-btn {
+    background: none; border: 1px dashed var(--border-strong);
+    color: var(--text-secondary); font-family: inherit;
+    font-size: 12px; font-weight: 600;
+    padding: 5px 10px; border-radius: 6px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .add-link-btn:hover {
+    color: var(--c-cyan);
+    border-color: rgba(34,211,238,0.45);
+    background: rgba(34,211,238,0.06);
+  }
+  .add-link-btn svg { width: 11px; height: 11px; display: block; }
   .new-note-form.open { display: flex; }
   .new-note-bar.open .new-note-toggle { display: none; }
   .new-note-form .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -1790,6 +2089,14 @@
       <span class="tab-label">Tasks</span>
       <span class="tab-count" aria-hidden="true" style="visibility: hidden;">0</span>
     </button>
+    <button class="tab-btn" id="tabTicketsBtn" type="button" data-tab="tickets">
+      <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/>
+        <path d="M13 7v2M13 11v2M13 15v2"/>
+      </svg></span>
+      <span class="tab-label">Tickets</span>
+      <span class="tab-count" id="tabTicketsCount">0</span>
+    </button>
     <button class="tab-btn" id="tabNotesBtn" type="button" data-tab="notes">
       <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1798,13 +2105,6 @@
       </svg></span>
       <span class="tab-label">Notes</span>
       <span class="tab-count" id="tabNotesCount">0</span>
-    </button>
-    <button class="tab-btn" id="tabBookmarksBtn" type="button" data-tab="bookmarks">
-      <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-      </svg></span>
-      <span class="tab-label">Bookmarks</span>
-      <span class="tab-count" id="tabBookmarksCount">0</span>
     </button>
     <button class="tab-btn" id="tabRemindersBtn" type="button" data-tab="reminders">
       <span class="tab-icon-wrap"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -1919,9 +2219,12 @@
   </div>
 
   <!-- History -->
-  <div class="pane">
-    <div class="pane-head">
-      <span class="pane-title" id="doneTitle"><span class="dot"></span>History</span>
+  <div class="pane is-collapsible is-collapsed" id="historyPane">
+    <div class="pane-head" id="historyPaneHead" role="button" tabindex="0" aria-expanded="false">
+      <span class="pane-title" id="doneTitle">
+        <span class="dot"></span>History
+        <svg class="collapse-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3 L8 6 L4 9"/></svg>
+      </span>
       <div class="pane-actions">
         <span id="doneCount">0 tasks</span>
       </div>
@@ -1930,6 +2233,100 @@
   </div>
 
   </div><!-- /tasksView -->
+
+  <!-- Tickets view -->
+  <div id="ticketsView" style="display:none;">
+    <div class="new-ticket-bar" id="newTicketBar">
+      <button class="new-ticket-toggle" id="newTicketToggle">
+        <span class="plus">+</span>
+        <span>New ticket</span>
+      </button>
+      <div class="new-ticket-form" id="newTicketForm">
+        <div class="row">
+          <input type="text" class="input-clean" id="newTicketSubject" placeholder="Subject (e.g., Server outage on prod)" autocomplete="off" style="flex:1; min-width:220px;" />
+        </div>
+        <div class="row">
+          <span class="form-label">Escalation</span>
+          <div class="type-selector" id="ticketTypeSelector">
+            <button type="button" class="type-option active" data-ttype="internal">Internal</button>
+            <button type="button" class="type-option" data-ttype="external">External</button>
+          </div>
+        </div>
+        <div class="row">
+          <span class="form-label">Category</span>
+          <div class="type-selector" id="ticketCategorySelector">
+            <button type="button" class="type-option active" data-tcat="credit">Credit</button>
+            <button type="button" class="type-option" data-tcat="debit">Debit</button>
+            <button type="button" class="type-option" data-tcat="others">Others</button>
+          </div>
+        </div>
+        <div class="row">
+          <span class="form-label">Date raised</span>
+          <input type="date" class="input-clean" id="newTicketDate" style="width:180px;" />
+        </div>
+        <div class="row">
+          <input type="text" class="input-clean" id="newTicketRaisedBy" placeholder="Raised by (optional, e.g., name or email)" autocomplete="off" style="flex:1; min-width:220px;" />
+        </div>
+        <div class="row">
+          <input type="text" class="input-clean" id="newTicketNote" placeholder="Note (optional)" autocomplete="off" style="flex:1; min-width:220px;" />
+        </div>
+        <div class="row">
+          <button class="btn btn-primary" id="addTicketBtn">Add ticket</button>
+          <button class="btn btn-ghost" id="cancelTicketBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane">
+      <div class="pane-head">
+        <span class="pane-title"><span class="dot" style="background: var(--c-orange); box-shadow: 0 0 8px var(--c-orange);"></span>Tickets</span>
+        <div class="pane-actions">
+          <span id="ticketsHeaderCount">0 tickets</span>
+          <button type="button" class="pane-action-btn" id="exportTicketsCsvBtn" title="Export tickets to CSV">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8M4 7l3 3 3-3M2 12h10"/></svg>
+            <span>Export</span>
+          </button>
+        </div>
+      </div>
+      <div class="ticket-controls" id="ticketControls">
+        <label class="tcontrol">
+          <span class="tcontrol-label">Sort</span>
+          <select id="ticketSortField" class="tcontrol-select">
+            <option value="dateRaised">Aging</option>
+            <option value="raisedBy">Raised by</option>
+            <option value="type">Escalation</option>
+            <option value="category">Category</option>
+          </select>
+        </label>
+        <button type="button" class="tcontrol-dir" id="ticketsSortDirBtn" title="Toggle sort direction">
+          <span id="ticketsSortDirLabel">↑ Asc</span>
+        </button>
+        <label class="tcontrol">
+          <span class="tcontrol-label">Escalation</span>
+          <select id="ticketFilterEscalation" class="tcontrol-select">
+            <option value="">All</option>
+            <option value="internal">Internal</option>
+            <option value="external">External</option>
+          </select>
+        </label>
+        <label class="tcontrol">
+          <span class="tcontrol-label">Category</span>
+          <select id="ticketFilterCategory" class="tcontrol-select">
+            <option value="">All</option>
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+            <option value="others">Others</option>
+          </select>
+        </label>
+        <label class="tcontrol">
+          <span class="tcontrol-label">Raised by</span>
+          <select id="ticketFilterRaisedBy" class="tcontrol-select"><option value="">All</option></select>
+        </label>
+        <button type="button" class="tcontrol-clear" id="clearTicketFilters">Clear filters</button>
+      </div>
+      <div id="ticketsList"></div>
+    </div>
+  </div>
 
   <!-- Notes view -->
   <div id="notesView" style="display:none;">
@@ -1942,6 +2339,15 @@
       <div class="new-note-form" id="newNoteForm">
         <div class="row">
           <input type="text" class="input-clean" id="newNoteTitle" placeholder="Note title" autocomplete="off" style="flex:1; min-width:200px;" />
+        </div>
+        <div class="row" id="newNoteAddLinkRow">
+          <button type="button" class="add-link-btn" id="newNoteAddLinkBtn">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8 L8 6"/><path d="M9 4 L10.5 2.5 A2 2 0 0 1 13.5 5.5 L11.5 7.5"/><path d="M5 6.5 L3 8.5 A2 2 0 0 0 5.5 11 L7.5 9"/></svg>
+            Add link
+          </button>
+        </div>
+        <div class="row" id="newNoteUrlRow" style="display:none;">
+          <input type="url" class="input-clean" id="newNoteUrl" placeholder="Link (e.g. https://example.com)" autocomplete="off" style="flex:1; min-width:200px;" />
         </div>
         <textarea class="new-note-textarea" id="newNoteContent" placeholder="Write your note here…"></textarea>
         <div class="row">
@@ -2350,12 +2756,14 @@
     let unsubNotes = null;
     let unsubBookmarks = null;
     let unsubReminders = null;
+    let unsubTickets = null;
     let sections = [];
     let tasks = [];
     let templates = [];
     let notes = [];
     let bookmarks = [];
     let reminders = [];
+    let tickets = [];
     let settings = { notifications: {}, cleanup: {} };
     let pendingWrites = 0;
     let selectedSectionType = "general";
@@ -2393,6 +2801,7 @@
         if (unsubNotes) unsubNotes();
         if (unsubBookmarks) unsubBookmarks();
         if (unsubReminders) unsubReminders();
+        if (unsubTickets) unsubTickets();
         clearNotifTimers();
         cleanupRan = false;
         showAuth();
@@ -2450,7 +2859,13 @@
 
       unsubSections = onSnapshot(collection(db, "users", uid, "sections"), snap => {
         sections = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-          .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+          .sort((a, b) => {
+            // Pinned sections float to the top; within each group, sort by
+            // createdAt desc (newest first).
+            const aP = a.pinned ? 1 : 0, bP = b.pinned ? 1 : 0;
+            if (aP !== bP) return bP - aP;
+            return (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0);
+          });
         render();
       });
       unsubTasks = onSnapshot(collection(db, "users", uid, "tasks"), snap => {
@@ -2491,6 +2906,11 @@
       unsubReminders = onSnapshot(collection(db, "users", uid, "reminders"), snap => {
         reminders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderReminders();
+      });
+      unsubTickets = onSnapshot(collection(db, "users", uid, "tickets"), snap => {
+        tickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderTickets();
+        updateTicketsCount();
       });
     }
 
@@ -2651,6 +3071,12 @@
       batch.delete(doc(db, "users", uid(), "sections", id));
       await trackWrite(batch.commit());
     }
+    async function toggleSectionPin(id) {
+      const s = sections.find(x => x.id === id); if (!s) return;
+      await trackWrite(updateDoc(doc(db, "users", uid(), "sections", id), {
+        pinned: !s.pinned
+      }));
+    }
 
     // ---- Mutations: Tasks ----
     async function addTask(sectionId, text, priority, dueDate) {
@@ -2773,14 +3199,22 @@
     }
 
     // ---- Mutations: Notes ----
-    async function addNote(title, content) {
+    async function addNote(title, content, url) {
       const t = (title || "").trim();
       const c = (content || "").trim();
-      if (!t && !c) return;
+      const u = (url || "").trim();
+      if (!t && !c && !u) return;
       await trackWrite(addDoc(collection(db, "users", uid(), "notes"), {
         title: t || "Untitled",
         content: c,
+        url: u || null,
         createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }));
+    }
+    async function updateNoteUrl(id, url) {
+      await trackWrite(updateDoc(doc(db, "users", uid(), "notes", id), {
+        url: (url || "").trim() || null,
         updatedAt: serverTimestamp()
       }));
     }
@@ -2859,6 +3293,66 @@
       const r = reminders.find(x => x.id === id);
       if (!confirm(`Delete reminder "${r?.name || "this reminder"}"?`)) return;
       await trackWrite(deleteDoc(doc(db, "users", uid(), "reminders", id)));
+    }
+
+    // ---- Mutations: Tickets ----
+    async function addTicket({ subject, dateRaised, type, category, raisedBy, note }) {
+      const s = (subject || "").trim();
+      if (!s || !dateRaised) return;
+      const validCats = ["credit", "debit", "others"];
+      await trackWrite(addDoc(collection(db, "users", uid(), "tickets"), {
+        subject: s,
+        dateRaised: dateRaised,
+        type: type === "external" ? "external" : "internal",
+        category: validCats.indexOf(category) >= 0 ? category : "others",
+        raisedBy: (raisedBy || "").trim(),
+        note: (note || "").trim(),
+        createdAt: serverTimestamp()
+      }));
+    }
+    async function updateTicketField(id, field, value) {
+      await trackWrite(updateDoc(doc(db, "users", uid(), "tickets", id), { [field]: value }));
+    }
+    async function deleteTicket(id) {
+      const t = tickets.find(x => x.id === id);
+      if (!confirm(`Delete ticket "${t?.subject || "this ticket"}"?`)) return;
+      await trackWrite(deleteDoc(doc(db, "users", uid(), "tickets", id)));
+    }
+    async function updateTicket(id, data) {
+      const s = (data.subject || "").trim();
+      if (!s) return;
+      const validCats = ["credit", "debit", "others"];
+      await trackWrite(updateDoc(doc(db, "users", uid(), "tickets", id), {
+        subject: s,
+        dateRaised: data.dateRaised || null,
+        type: data.type === "external" ? "external" : "internal",
+        category: validCats.indexOf(data.category) >= 0 ? data.category : "others",
+        raisedBy: (data.raisedBy || "").trim(),
+        note: (data.note || "").trim()
+      }));
+    }
+    function computeTicketAgeDays(dateRaised) {
+      if (!dateRaised) return 0;
+      const d = new Date(dateRaised + "T00:00:00");
+      if (isNaN(d.getTime())) return 0;
+      const today = new Date(); today.setHours(0,0,0,0);
+      return Math.max(0, Math.round((today.getTime() - d.getTime()) / 86400000));
+    }
+    function formatTicketDate(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso + "T00:00:00");
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    }
+    function ticketAgeClass(days) {
+      if (days > 30) return "critical";
+      if (days > 7) return "warning";
+      return "";
+    }
+    function updateTicketsCount() {
+      const c = tickets.length;
+      const el = document.getElementById("tabTicketsCount"); if (el) el.textContent = c;
+      const h = document.getElementById("ticketsHeaderCount"); if (h) h.textContent = c + " " + (c === 1 ? "ticket" : "tickets");
     }
     function todayKey() { return new Date().toISOString().slice(0, 10); }
     function reminderAckedToday(id) {
@@ -2973,6 +3467,26 @@
       if (onClick) badge.addEventListener("click", e => { e.stopPropagation(); onClick(); });
       return badge;
     }
+    // When a task is being marked done/skipped from the OPEN state, run a
+    // short visual lead-in (strike + tint slide) and then collapse the row,
+    // THEN write to Firestore. The status-change confirm dialog (if any) is
+    // shown first so we don't animate a row that the user is going to cancel.
+    async function animateThenSetStatus(li, t, targetStatus) {
+      const cur = getStatus(t);
+      // Skip animation for reopens or already-closed -> other-closed changes.
+      // The confirm dialog inside setTaskStatus handles those flows fine.
+      if (cur !== "open" || !li) {
+        await setTaskStatus(t.id, targetStatus);
+        return;
+      }
+      const phaseClass = targetStatus === "done" ? "completing" : "skipping";
+      li.classList.add(phaseClass);
+      await new Promise(r => setTimeout(r, 220));
+      li.classList.add("exiting");
+      await new Promise(r => setTimeout(r, 230));
+      await setTaskStatus(t.id, targetStatus);
+    }
+
     function makeStatusButtons(t) {
       const wrap = document.createElement("div");
       wrap.className = "status-buttons";
@@ -2982,7 +3496,10 @@
       check.type = "button";
       check.className = "check-btn" + (status === "done" ? " active" : "");
       check.title = status === "done" ? "Reopen task" : "Mark as done";
-      check.addEventListener("click", () => setTaskStatus(t.id, "done"));
+      check.addEventListener("click", (e) => {
+        const li = e.currentTarget.closest(".task-item");
+        animateThenSetStatus(li, t, "done");
+      });
 
       const skip = document.createElement("button");
       skip.type = "button";
@@ -2991,7 +3508,10 @@
       if (status !== "skipped") {
         skip.innerHTML = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2 L10 10 M10 2 L2 10"/></svg>';
       }
-      skip.addEventListener("click", () => setTaskStatus(t.id, "skipped"));
+      skip.addEventListener("click", (e) => {
+        const li = e.currentTarget.closest(".task-item");
+        animateThenSetStatus(li, t, "skipped");
+      });
 
       wrap.appendChild(check);
       wrap.appendChild(skip);
@@ -3096,7 +3616,9 @@
     function makeSectionCard(section, sectionTasks, mode) {
       const card = document.createElement("div");
       const colorCls = sectionColorClass(section.id);
-      card.className = "section-card " + colorCls + (mode === "done" ? " is-done" : "");
+      card.className = "section-card " + colorCls
+        + (mode === "done" ? " is-done" : "")
+        + (section.pinned ? " is-pinned" : "");
 
       const head = document.createElement("div");
       head.className = "section-head";
@@ -3157,6 +3679,17 @@
           sortBtn.addEventListener("click", () => sortSectionByPriority(section.id));
           head.appendChild(sortBtn);
         }
+
+        // Pin / unpin button — pinned sections float to the top of the list
+        const pinBtn = document.createElement("button");
+        pinBtn.type = "button";
+        pinBtn.className = "pin-btn" + (section.pinned ? " is-pinned" : "");
+        pinBtn.title = section.pinned ? "Unpin section" : "Pin section to top";
+        pinBtn.innerHTML = section.pinned
+          ? '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 2 L10.5 2 L10 6 L13 7 L13 9 L9 9 L9 14 L8 14 L7 9 L3 9 L3 7 L6 6 Z"/></svg>'
+          : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M5.5 2 L10.5 2 L10 6 L13 7 L13 9 L9 9 L9 14 L8 14 L7 9 L3 9 L3 7 L6 6 Z"/></svg>';
+        pinBtn.addEventListener("click", () => toggleSectionPin(section.id));
+        head.appendChild(pinBtn);
 
         head.appendChild(makeEditButton(nameInput, "Rename section"));
 
@@ -3547,6 +4080,19 @@
           insertBulletAtCursor(content);
         });
 
+        // URL icon — small inline cyan link glyph next to the title, only
+        // present when the note has a `url` field. Click opens in new tab.
+        let urlChip = null;
+        if (n.url) {
+          urlChip = document.createElement("a");
+          urlChip.className = "note-url-chip";
+          urlChip.href = n.url;
+          urlChip.target = "_blank";
+          urlChip.rel = "noopener noreferrer";
+          urlChip.title = "Open link: " + n.url;
+          urlChip.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 L10 6"/><path d="M7 4 L9.5 1.5 A2 2 0 0 1 12.5 4.5 L10 7"/><path d="M9 12 L6.5 14.5 A2 2 0 0 1 3.5 11.5 L6 9"/></svg>';
+        }
+
         const del = document.createElement("button");
         del.className = "icon-btn";
         del.title = "Delete note";
@@ -3555,6 +4101,7 @@
         del.addEventListener("click", () => deleteNote(n.id));
 
         head.appendChild(titleInput);
+        if (urlChip) head.appendChild(urlChip);
         head.appendChild(makeEditButton(titleInput, "Rename note"));
         head.appendChild(bulletBtn);
         head.appendChild(del);
@@ -3768,6 +4315,254 @@
       return `In ${Math.floor(d / 365)} year`;
     }
 
+    let ticketsSortField = localStorage.getItem("atlas.ticketsSortField") || "dateRaised";
+    let ticketsSortOrder = localStorage.getItem("atlas.ticketsSortOrder") || "asc";
+    let ticketFilters = (() => {
+      try { return JSON.parse(localStorage.getItem("atlas.ticketFilters") || "{}"); }
+      catch (e) { return {}; }
+    })();
+    let editingTicketId = null;
+
+    function persistTicketSort() {
+      localStorage.setItem("atlas.ticketsSortField", ticketsSortField);
+      localStorage.setItem("atlas.ticketsSortOrder", ticketsSortOrder);
+    }
+    function persistTicketFilters() {
+      localStorage.setItem("atlas.ticketFilters", JSON.stringify(ticketFilters));
+    }
+    function applyTicketsSortDirLabel() {
+      const lbl = document.getElementById("ticketsSortDirLabel");
+      if (lbl) lbl.textContent = ticketsSortOrder === "desc" ? "↓ Desc" : "↑ Asc";
+    }
+    function toggleTicketsSortDir() {
+      ticketsSortOrder = ticketsSortOrder === "desc" ? "asc" : "desc";
+      persistTicketSort(); applyTicketsSortDirLabel(); renderTickets();
+    }
+    function clearTicketFilters() {
+      ticketFilters = {};
+      persistTicketFilters();
+      const e = document.getElementById("ticketFilterEscalation");
+      const c = document.getElementById("ticketFilterCategory");
+      const r = document.getElementById("ticketFilterRaisedBy");
+      if (e) e.value = "";
+      if (c) c.value = "";
+      if (r) r.value = "";
+      renderTickets();
+    }
+    function applyTicketControlsFromState() {
+      const sf = document.getElementById("ticketSortField");
+      if (sf) sf.value = ticketsSortField;
+      applyTicketsSortDirLabel();
+      const ef = document.getElementById("ticketFilterEscalation");
+      const cf = document.getElementById("ticketFilterCategory");
+      const rf = document.getElementById("ticketFilterRaisedBy");
+      if (ef) ef.value = ticketFilters.escalation || "";
+      if (cf) cf.value = ticketFilters.category || "";
+      if (rf) rf.value = ticketFilters.raisedBy || "";
+    }
+    function refreshRaisedByOptions() {
+      const rf = document.getElementById("ticketFilterRaisedBy");
+      if (!rf) return;
+      const unique = Array.from(new Set(tickets.map(t => (t.raisedBy || "").trim()).filter(Boolean)));
+      unique.sort((a, b) => a.localeCompare(b));
+      const current = rf.value;
+      rf.innerHTML = '<option value="">All</option>' + unique.map(v =>
+        `<option value="${v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;")}">${v.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</option>`
+      ).join("");
+      // Restore selection if still present
+      if (current && unique.includes(current)) rf.value = current;
+      else if (ticketFilters.raisedBy && unique.includes(ticketFilters.raisedBy)) rf.value = ticketFilters.raisedBy;
+    }
+
+    function exportTicketsCsv() {
+      if (tickets.length === 0) { alert("No tickets to export."); return; }
+      // Honor the same filters + sort that are showing on screen
+      const filtered = tickets.filter(t => {
+        if (ticketFilters.escalation && (t.type || "internal") !== ticketFilters.escalation) return false;
+        if (ticketFilters.category && (t.category || "others") !== ticketFilters.category) return false;
+        if (ticketFilters.raisedBy && (t.raisedBy || "") !== ticketFilters.raisedBy) return false;
+        return true;
+      });
+      if (filtered.length === 0) { alert("No tickets match the current filters."); return; }
+      const order = ticketsSortOrder === "desc" ? -1 : 1;
+      const field = ticketsSortField || "dateRaised";
+      const sorted = filtered.slice().sort((a, b) => {
+        let va, vb;
+        if (field === "dateRaised") { va = a.dateRaised || "9999-12-31"; vb = b.dateRaised || "9999-12-31"; }
+        else if (field === "raisedBy") { va = (a.raisedBy || "").toLowerCase(); vb = (b.raisedBy || "").toLowerCase(); }
+        else if (field === "type")     { va = a.type || "internal"; vb = b.type || "internal"; }
+        else if (field === "category") { va = a.category || "others"; vb = b.category || "others"; }
+        else { va = ""; vb = ""; }
+        if (va < vb) return -1 * order;
+        if (va > vb) return  1 * order;
+        return 0;
+      });
+      const rows = [["Subject", "Escalation", "Category", "Date raised", "Aging (days)", "Raised by", "Note"]];
+      sorted.forEach(t => {
+        rows.push([
+          t.subject || "",
+          t.type || "internal",
+          t.category || "others",
+          t.dateRaised || "",
+          String(computeTicketAgeDays(t.dateRaised)),
+          t.raisedBy || "",
+          t.note || ""
+        ]);
+      });
+      const csv = rows.map(r => r.map(csvEscape).join(",")).join("\n");
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `atlas-tickets-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function renderTickets() {
+      const list = document.getElementById("ticketsList");
+      if (!list) return;
+      list.innerHTML = "";
+      refreshRaisedByOptions();
+      if (tickets.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No tickets yet. Click + New ticket to start tracking.";
+        list.appendChild(empty);
+        return;
+      }
+
+      // Apply filters
+      const filtered = tickets.filter(t => {
+        if (ticketFilters.escalation && (t.type || "internal") !== ticketFilters.escalation) return false;
+        if (ticketFilters.category && (t.category || "others") !== ticketFilters.category) return false;
+        if (ticketFilters.raisedBy && (t.raisedBy || "") !== ticketFilters.raisedBy) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No tickets match the current filters.";
+        list.appendChild(empty);
+        return;
+      }
+
+      // Sort
+      const order = ticketsSortOrder === "desc" ? -1 : 1;
+      const field = ticketsSortField || "dateRaised";
+      const sorted = filtered.slice().sort((a, b) => {
+        let va, vb;
+        if (field === "dateRaised") {
+          va = a.dateRaised || "9999-12-31";
+          vb = b.dateRaised || "9999-12-31";
+        } else if (field === "raisedBy") {
+          va = (a.raisedBy || "").toLowerCase();
+          vb = (b.raisedBy || "").toLowerCase();
+        } else if (field === "type") {
+          va = a.type || "internal";
+          vb = b.type || "internal";
+        } else if (field === "category") {
+          va = a.category || "others";
+          vb = b.category || "others";
+        } else {
+          va = ""; vb = "";
+        }
+        if (va < vb) return -1 * order;
+        if (va > vb) return  1 * order;
+        return 0;
+      });
+
+      sorted.forEach(t => {
+        const card = document.createElement("div");
+        card.className = "ticket-card";
+        const head = document.createElement("div");
+        head.className = "ticket-head";
+        const subject = document.createElement("div");
+        subject.className = "ticket-subject";
+        subject.textContent = t.subject || "(untitled)";
+        head.appendChild(subject);
+        const days = computeTicketAgeDays(t.dateRaised);
+        const agePill = document.createElement("span");
+        agePill.className = "ticket-age-pill " + ticketAgeClass(days);
+        agePill.textContent = days === 0 ? "Today" : (days === 1 ? "1 day" : days + " days");
+        agePill.title = "Aging since " + formatTicketDate(t.dateRaised);
+        head.appendChild(agePill);
+        // Edit button (pencil)
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "edit-btn";
+        editBtn.title = "Edit ticket";
+        editBtn.innerHTML = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12.5L1.5 10.5L9.5 2.5L11.5 4.5L3.5 12.5L1.5 12.5Z"/><path d="M8.5 3.5L10.5 5.5"/></svg>';
+        editBtn.addEventListener("click", () => beginEditTicket(t));
+        head.appendChild(editBtn);
+        const del = document.createElement("button");
+        del.className = "icon-btn";
+        del.title = "Delete ticket";
+        del.innerHTML = "&times;";
+        del.addEventListener("click", () => deleteTicket(t.id));
+        head.appendChild(del);
+        card.appendChild(head);
+        const meta = document.createElement("div");
+        meta.className = "ticket-meta";
+        const typeBadge = document.createElement("span");
+        typeBadge.className = "ticket-type-badge " + (t.type === "external" ? "external" : "internal");
+        typeBadge.textContent = t.type === "external" ? "External" : "Internal";
+        meta.appendChild(typeBadge);
+        if (t.category) {
+          const catBadge = document.createElement("span");
+          catBadge.className = "ticket-category-badge " + t.category;
+          catBadge.textContent = t.category.charAt(0).toUpperCase() + t.category.slice(1);
+          meta.appendChild(catBadge);
+        }
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = "Raised " + formatTicketDate(t.dateRaised);
+        meta.appendChild(dateSpan);
+        if (t.raisedBy) {
+          const byEl = document.createElement("span");
+          byEl.textContent = "by " + t.raisedBy;
+          meta.appendChild(byEl);
+        }
+        card.appendChild(meta);
+        if (t.note) {
+          const noteEl = document.createElement("div");
+          noteEl.className = "ticket-note";
+          noteEl.textContent = t.note;
+          card.appendChild(noteEl);
+        }
+        list.appendChild(card);
+      });
+    }
+
+    // Open the new-ticket form prefilled with the given ticket's values.
+    function beginEditTicket(t) {
+      editingTicketId = t.id;
+      const bar = document.getElementById("newTicketBar");
+      const subjectInput = document.getElementById("newTicketSubject");
+      const dateInput = document.getElementById("newTicketDate");
+      const raisedByInput = document.getElementById("newTicketRaisedBy");
+      const noteInput = document.getElementById("newTicketNote");
+      const typeSel = document.getElementById("ticketTypeSelector");
+      const catSel = document.getElementById("ticketCategorySelector");
+      const addBtn = document.getElementById("addTicketBtn");
+      bar.classList.add("open");
+      subjectInput.value = t.subject || "";
+      dateInput.value = t.dateRaised || "";
+      raisedByInput.value = t.raisedBy || "";
+      noteInput.value = t.note || "";
+      const tval = t.type === "external" ? "external" : "internal";
+      typeSel.querySelectorAll(".type-option").forEach(b => b.classList.toggle("active", b.dataset.ttype === tval));
+      const cval = ["credit", "debit", "others"].indexOf(t.category) >= 0 ? t.category : "others";
+      catSel.querySelectorAll(".type-option").forEach(b => b.classList.toggle("active", b.dataset.tcat === cval));
+      if (addBtn) addBtn.textContent = "Save changes";
+      // Scroll the form into view
+      bar.scrollIntoView({ behavior: "smooth", block: "start" });
+      subjectInput.focus();
+      subjectInput.select();
+    }
+
     function renderReminders() {
       const list = $("remindersList");
       const count = reminders.length;
@@ -3890,18 +4685,18 @@
     }
 
     // ---- Tab switching ----
-    const TABS = ["tasks", "notes", "bookmarks", "reminders", "profile"];
+    const TABS = ["tasks", "tickets", "notes", "reminders", "profile"];
     const TAB_VIEWS = {
       tasks: "tasksView",
+      tickets: "ticketsView",
       notes: "notesView",
-      bookmarks: "bookmarksView",
       reminders: "remindersView",
       profile: "profileView"
     };
     const TAB_BTNS = {
       tasks: "tabTasksBtn",
+      tickets: "tabTicketsBtn",
       notes: "tabNotesBtn",
-      bookmarks: "tabBookmarksBtn",
       reminders: "tabRemindersBtn",
       profile: "tabProfileBtn"
     };
@@ -4294,6 +5089,158 @@
       if (e.key === "Escape") closeSec();
     });
 
+    // ---- Wire up: New ticket ----
+    {
+      const bar = document.getElementById("newTicketBar");
+      const toggle = document.getElementById("newTicketToggle");
+      const subjectInput = document.getElementById("newTicketSubject");
+      const dateInput = document.getElementById("newTicketDate");
+      const raisedByInput = document.getElementById("newTicketRaisedBy");
+      const noteInput = document.getElementById("newTicketNote");
+      const typeSel = document.getElementById("ticketTypeSelector");
+      const catSel = document.getElementById("ticketCategorySelector");
+      const addBtn = document.getElementById("addTicketBtn");
+
+      const todayIso = () => {
+        const d = new Date();
+        return d.getFullYear() + "-" +
+          String(d.getMonth() + 1).padStart(2, "0") + "-" +
+          String(d.getDate()).padStart(2, "0");
+      };
+      const getSelectedType = () => {
+        const a = typeSel.querySelector(".type-option.active");
+        return a ? a.dataset.ttype : "internal";
+      };
+      const getSelectedCategory = () => {
+        const a = catSel.querySelector(".type-option.active");
+        return a ? a.dataset.tcat : "credit";
+      };
+
+      const openForm = () => {
+        bar.classList.add("open");
+        if (!dateInput.value) dateInput.value = todayIso();
+        if (addBtn) addBtn.textContent = "Add ticket";
+        editingTicketId = null;
+        subjectInput.focus();
+      };
+      const closeForm = () => {
+        bar.classList.remove("open");
+        subjectInput.value = ""; noteInput.value = ""; raisedByInput.value = "";
+        dateInput.value = todayIso();
+        editingTicketId = null;
+        if (addBtn) addBtn.textContent = "Add ticket";
+        typeSel.querySelectorAll(".type-option").forEach(b => {
+          b.classList.toggle("active", b.dataset.ttype === "internal");
+        });
+        catSel.querySelectorAll(".type-option").forEach(b => {
+          b.classList.toggle("active", b.dataset.tcat === "credit");
+        });
+      };
+      const submitForm = async () => {
+        const s = subjectInput.value.trim();
+        if (!s) { closeForm(); return; }
+        const payload = {
+          subject: s,
+          dateRaised: dateInput.value || todayIso(),
+          type: getSelectedType(),
+          category: getSelectedCategory(),
+          raisedBy: raisedByInput.value,
+          note: noteInput.value
+        };
+        if (editingTicketId) {
+          await updateTicket(editingTicketId, payload);
+        } else {
+          await addTicket(payload);
+        }
+        closeForm();
+      };
+
+      toggle.addEventListener("click", openForm);
+      document.getElementById("addTicketBtn").addEventListener("click", submitForm);
+      document.getElementById("cancelTicketBtn").addEventListener("click", closeForm);
+
+      typeSel.querySelectorAll(".type-option").forEach(b => {
+        b.addEventListener("click", () => {
+          typeSel.querySelectorAll(".type-option").forEach(x => x.classList.remove("active"));
+          b.classList.add("active");
+        });
+      });
+      catSel.querySelectorAll(".type-option").forEach(b => {
+        b.addEventListener("click", () => {
+          catSel.querySelectorAll(".type-option").forEach(x => x.classList.remove("active"));
+          b.classList.add("active");
+        });
+      });
+
+      [subjectInput, dateInput, raisedByInput, noteInput].forEach(inp => {
+        inp.addEventListener("keydown", e => {
+          e.stopPropagation();
+          if (e.key === "Enter") submitForm();
+          if (e.key === "Escape") closeForm();
+        });
+      });
+
+      // Export button
+      document.getElementById("exportTicketsCsvBtn").addEventListener("click", exportTicketsCsv);
+
+      // Sort & filter controls
+      const sortFieldEl = document.getElementById("ticketSortField");
+      sortFieldEl.value = ticketsSortField;
+      sortFieldEl.addEventListener("change", () => {
+        ticketsSortField = sortFieldEl.value || "dateRaised";
+        persistTicketSort();
+        renderTickets();
+      });
+      document.getElementById("ticketsSortDirBtn").addEventListener("click", toggleTicketsSortDir);
+
+      const escFilter = document.getElementById("ticketFilterEscalation");
+      escFilter.value = ticketFilters.escalation || "";
+      escFilter.addEventListener("change", () => {
+        if (escFilter.value) ticketFilters.escalation = escFilter.value;
+        else delete ticketFilters.escalation;
+        persistTicketFilters(); renderTickets();
+      });
+      const catFilter = document.getElementById("ticketFilterCategory");
+      catFilter.value = ticketFilters.category || "";
+      catFilter.addEventListener("change", () => {
+        if (catFilter.value) ticketFilters.category = catFilter.value;
+        else delete ticketFilters.category;
+        persistTicketFilters(); renderTickets();
+      });
+      const rbFilter = document.getElementById("ticketFilterRaisedBy");
+      rbFilter.addEventListener("change", () => {
+        if (rbFilter.value) ticketFilters.raisedBy = rbFilter.value;
+        else delete ticketFilters.raisedBy;
+        persistTicketFilters(); renderTickets();
+      });
+      document.getElementById("clearTicketFilters").addEventListener("click", clearTicketFilters);
+
+      applyTicketControlsFromState();
+    }
+
+    // ---- Wire up: collapsible History pane ----
+    (function () {
+      const pane = document.getElementById("historyPane");
+      const head = document.getElementById("historyPaneHead");
+      if (!pane || !head) return;
+      // Default to collapsed. Stored value of "open" means the user expanded
+      // it; anything else (or absent) keeps it collapsed.
+      const state = localStorage.getItem("atlas.historyOpen");
+      if (state === "open") {
+        pane.classList.remove("is-collapsed");
+        head.setAttribute("aria-expanded", "true");
+      }
+      const toggle = () => {
+        const isCollapsed = pane.classList.toggle("is-collapsed");
+        head.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+        localStorage.setItem("atlas.historyOpen", isCollapsed ? "closed" : "open");
+      };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    })();
+
     // ---- Wire up: Welcome card ----
     async function dismissWelcome() {
       $("welcomeCard").style.display = "none";
@@ -4397,6 +5344,21 @@
     const noteAdd = $("addNoteBtn");
     const noteCancel = $("cancelNoteBtn");
 
+    const noteUrl = $("newNoteUrl");
+    const noteUrlRow = $("newNoteUrlRow");
+    const noteAddLinkRow = $("newNoteAddLinkRow");
+    const noteAddLinkBtn = $("newNoteAddLinkBtn");
+
+    const showNoteUrlField = () => {
+      noteUrlRow.style.display = "flex";
+      noteAddLinkRow.style.display = "none";
+      noteUrl.focus();
+    };
+    const hideNoteUrlField = () => {
+      noteUrlRow.style.display = "none";
+      noteAddLinkRow.style.display = "flex";
+    };
+
     const openNote = () => {
       noteBar.classList.add("open");
       noteForm.classList.add("open");
@@ -4405,15 +5367,19 @@
     const closeNote = () => {
       noteBar.classList.remove("open");
       noteForm.classList.remove("open");
-      noteTitle.value = ""; noteContent.value = "";
+      noteTitle.value = ""; noteContent.value = ""; noteUrl.value = "";
+      hideNoteUrlField();
     };
+
+    noteAddLinkBtn.addEventListener("click", showNoteUrlField);
     const submitNote = async () => {
       const t = noteTitle.value.trim();
       const c = noteContent.value.trim();
-      if (!t && !c) { closeNote(); return; }
-      const _t = t, _c = c;
-      noteTitle.value = ""; noteContent.value = "";
-      await addNote(_t, _c);
+      const u = noteUrl.value.trim();
+      if (!t && !c && !u) { closeNote(); return; }
+      const _t = t, _c = c, _u = u;
+      noteTitle.value = ""; noteContent.value = ""; noteUrl.value = "";
+      await addNote(_t, _c, _u);
       closeNote();
     };
     noteToggle.addEventListener("click", openNote);
@@ -4624,7 +5590,7 @@
       }
       if (!confirm("This will REPLACE all your current data with the backup. This cannot be undone. Continue?")) return;
 
-      const collections = ["sections", "tasks", "notes", "bookmarks", "reminders", "templates"];
+      const collections = ["sections", "tasks", "notes", "bookmarks", "reminders", "templates", "tickets"];
       try {
         // Delete existing data
         for (const colName of collections) {
