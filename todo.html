@@ -154,12 +154,11 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
-    height: 100%;
-    /* Force body to fill the full dynamic viewport height. Without this,
-       iOS PWA positions `position: fixed` elements relative to CONTENT
-       bottom (not viewport bottom) when the body is shorter than the
-       viewport — exactly what creates the floating nav on empty Notes,
-       Bookmarks, or Reminders tabs. */
+    /* IMPORTANT: do NOT set `height: 100%` here — that caps body height at
+       viewport, which on iOS makes content past the bottom unreachable by
+       normal scroll (only iOS rubber-band overscroll briefly reveals it).
+       Use `min-height` only so body fills viewport when content is short
+       but grows when content overflows. */
     min-height: 100vh;
     min-height: 100dvh;
   }
@@ -392,8 +391,15 @@
 
   /* === MOBILE: bottom-fixed nav === */
   @media (max-width: 600px) {
-    body { padding: calc(env(safe-area-inset-top) + 12px) 0 96px 0; }
-    .container { border-radius: 0; border-left: none; border-right: none; min-height: calc(100vh - env(safe-area-inset-top) - 12px - 96px); }
+    body {
+      padding: calc(env(safe-area-inset-top) + 12px) 0
+               max(calc(env(safe-area-inset-bottom) + 90px), 130px) 0;
+    }
+    .container {
+      border-radius: 0; border-left: none; border-right: none;
+      min-height: calc(100vh - env(safe-area-inset-top) - 12px
+                       - max(calc(env(safe-area-inset-bottom) + 90px), 130px));
+    }
   }
 
   /* When launched as an installed PWA (home-screen icon), the iOS status
@@ -406,11 +412,17 @@
      class, with !important, so the rule wins on every platform/order. */
   @media (display-mode: standalone) and (max-width: 600px) {
     body { padding-top: max(calc(env(safe-area-inset-top) + 12px), 44px) !important; }
-    .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
+    .container {
+      min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px)
+                       - max(calc(env(safe-area-inset-bottom) + 90px), 130px));
+    }
   }
   @media (max-width: 600px) {
     html.is-standalone body { padding-top: max(calc(env(safe-area-inset-top) + 12px), 44px) !important; }
-    html.is-standalone .container { min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px) - 96px); }
+    html.is-standalone .container {
+      min-height: calc(100vh - max(calc(env(safe-area-inset-top) + 12px), 44px)
+                       - max(calc(env(safe-area-inset-bottom) + 90px), 130px));
+    }
   }
 
   /* Mobile: ensure the bottom nav has at least 24px of padding-bottom
@@ -1147,28 +1159,66 @@
   .pane { padding: 24px 32px; }
 
   /* Collapsible pane (used by History in Tasks tab) */
+  .pane.is-collapsible.is-collapsed {
+    /* When collapsed, the entire pane becomes a clearly-tappable card */
+    background: var(--surface-elevated);
+    border: 2px solid var(--c-orange);
+    border-radius: 10px;
+    margin: 16px 18px 8px;
+    padding: 16px 18px;
+    transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
+  }
+  .pane.is-collapsible.is-collapsed:hover {
+    background: var(--surface);
+    box-shadow: 0 2px 12px rgba(251, 146, 60, 0.30);
+  }
+  .pane.is-collapsible.is-collapsed .pane-title {
+    font-size: 14px;
+  }
   .pane.is-collapsible .pane-head {
     cursor: pointer;
     user-select: none;
-    transition: opacity 0.15s;
+    min-height: 28px;
+    align-items: center;
   }
-  .pane.is-collapsible .pane-head:hover { opacity: 0.85; }
+  .pane.is-collapsible .pane-title {
+    font-weight: 700;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pane.is-collapsible .history-label { color: var(--text); }
   .pane.is-collapsible .collapse-chevron {
-    width: 11px; height: 11px;
-    margin-left: 4px;
-    color: var(--text-muted);
+    width: 12px; height: 12px;
+    color: var(--accent);
     transition: transform 0.2s ease;
     vertical-align: middle;
   }
-  /* Expanded state: chevron points down */
+  /* Expanded state: chevron points down, pane returns to normal look */
   .pane.is-collapsible:not(.is-collapsed) .collapse-chevron {
     transform: rotate(90deg);
   }
-  /* Collapsed state: hide the body */
+  /* Collapsed: hide body */
   .pane.is-collapsible.is-collapsed #doneSections { display: none; }
   .pane.is-collapsible.is-collapsed .pane-head { padding-bottom: 0; }
-  /* Trim padding when collapsed so the pane stays compact */
-  .pane.is-collapsible.is-collapsed { padding-bottom: 18px; }
+
+  /* Expanded state — restore normal pane look so it integrates with the
+     rest of the active/history columns */
+  .pane.is-collapsible:not(.is-collapsed) {
+    background: var(--surface-soft);
+    border: none;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    margin: 0;
+    padding: 24px 32px;
+  }
+  @media (max-width: 600px) {
+    .pane.is-collapsible:not(.is-collapsed) {
+      padding: 16px 18px;
+    }
+  }
   .pane + .pane { border-top: 1px solid var(--border); background: var(--surface-soft); }
   .pane-head {
     display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
@@ -2222,8 +2272,9 @@
   <div class="pane is-collapsible is-collapsed" id="historyPane">
     <div class="pane-head" id="historyPaneHead" role="button" tabindex="0" aria-expanded="false">
       <span class="pane-title" id="doneTitle">
-        <span class="dot"></span>History
-        <svg class="collapse-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3 L8 6 L4 9"/></svg>
+        <span class="dot"></span>
+        <span class="history-label">Show closed tasks</span>
+        <svg class="collapse-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3 L8 6 L4 9"/></svg>
       </span>
       <div class="pane-actions">
         <span id="doneCount">0 tasks</span>
