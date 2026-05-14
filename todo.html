@@ -494,6 +494,84 @@
     background: var(--surface); border-color: var(--accent);
   }
   .ticket-controls .tcontrol-clear { color: var(--text-secondary); }
+
+  /* Search input used inside the Tickets controls row */
+  .tcontrol-search {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 4px 8px;
+    flex: 1 1 180px; min-width: 140px;
+    align-self: flex-end;
+  }
+  .tcontrol-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .tcontrol-search svg { width: 13px; height: 13px; color: var(--text-muted); flex-shrink: 0; }
+  .tcontrol-search input {
+    background: none; border: none; outline: none;
+    color: var(--text); font-family: inherit; font-size: 12px;
+    flex: 1; min-width: 0; padding: 1px 0;
+  }
+  .tcontrol-search-clear {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 16px; line-height: 1;
+    padding: 0 2px; display: none;
+  }
+  .tcontrol-search-clear:hover { color: var(--text); }
+  .tcontrol-search.has-text .tcontrol-search-clear { display: block; }
+
+  /* Matched-text highlight (search results across all tabs) */
+  .search-hl {
+    background: rgba(251, 191, 36, 0.38);
+    color: var(--text);
+    border-radius: 2px;
+    padding: 0 1px;
+    font-weight: 700;
+  }
+
+  /* Magnifying-glass toggle in a pane head (Notes, Tasks) */
+  .pane-search-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); padding: 3px 5px; border-radius: 5px;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .pane-search-btn svg { width: 15px; height: 15px; display: block; }
+  .pane-search-btn:hover { color: var(--text); background: var(--surface-elevated); }
+  .pane-search-btn.is-active { color: var(--accent); background: var(--accent-soft); }
+
+  /* Expandable search row that drops below a pane head */
+  .pane-search-row {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 7px 11px;
+    margin-bottom: 14px;
+  }
+  .pane-search-row:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pane-search-row svg { width: 14px; height: 14px; color: var(--text-muted); flex-shrink: 0; }
+  .pane-search-row input {
+    background: none; border: none; outline: none;
+    color: var(--text); font-family: inherit; font-size: 13px;
+    flex: 1; min-width: 0;
+  }
+  .pane-search-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 17px; line-height: 1; padding: 0 2px;
+  }
+  .pane-search-close:hover { color: var(--text); }
+
+  /* Read-only display elements shown in place of inputs during search */
+  .note-title-display { cursor: default; }
+  .note-content-display {
+    white-space: pre-wrap; word-break: break-word;
+    cursor: default; min-height: 0;
+  }
+  .task-text-display {
+    cursor: default; white-space: normal; word-break: break-word;
+  }
+  .section-name-display { cursor: default; }
   @media (max-width: 600px) {
     .ticket-controls { padding-left: 18px; padding-right: 18px; gap: 6px; }
     .ticket-controls .tcontrol-select { font-size: 12px; padding: 4px 20px 4px 7px; }
@@ -2295,7 +2373,17 @@
   <div class="pane">
     <div class="pane-head">
       <span class="pane-title"><span class="dot"></span>Active</span>
-      <div class="pane-actions"><span id="activeCount">0 tasks</span></div>
+      <div class="pane-actions">
+        <span id="activeCount">0 tasks</span>
+        <button type="button" class="pane-search-btn" id="tasksSearchBtn" title="Search tasks" aria-label="Search tasks">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="pane-search-row" id="tasksSearchRow" style="display:none;">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+      <input type="text" id="tasksSearch" placeholder="Search section &amp; task names…" autocomplete="off" />
+      <button type="button" class="pane-search-close" id="tasksSearchClose" aria-label="Close search">&times;</button>
     </div>
     <div id="activeSections"></div>
   </div>
@@ -2372,6 +2460,11 @@
         </div>
       </div>
       <div class="ticket-controls" id="ticketControls">
+        <div class="tcontrol-search" id="ticketSearchWrap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input type="text" id="ticketSearch" placeholder="Search tickets…" autocomplete="off" />
+          <button type="button" class="tcontrol-search-clear" id="ticketSearchClear" aria-label="Clear search">&times;</button>
+        </div>
         <label class="tcontrol">
           <span class="tcontrol-label">Sort</span>
           <select id="ticketSortField" class="tcontrol-select">
@@ -2444,7 +2537,17 @@
     <div class="pane">
       <div class="pane-head">
         <span class="pane-title"><span class="dot" style="background: var(--c-amber); box-shadow: 0 0 8px var(--c-amber);"></span>Notes</span>
-        <div class="pane-actions"><span id="notesCount">0 notes</span></div>
+        <div class="pane-actions">
+          <span id="notesCount">0 notes</span>
+          <button type="button" class="pane-search-btn" id="notesSearchBtn" title="Search notes" aria-label="Search notes">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pane-search-row" id="notesSearchRow" style="display:none;">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input type="text" id="notesSearch" placeholder="Search title, content, link…" autocomplete="off" />
+        <button type="button" class="pane-search-close" id="notesSearchClose" aria-label="Close search">&times;</button>
       </div>
       <div id="notesList"></div>
     </div>
@@ -3693,6 +3796,9 @@
       del.addEventListener("click", () => deleteTask(t.id));
       li.appendChild(del);
 
+      // (Search mode keeps task text fully editable — only the section
+      // name is highlighted; see makeSectionCard.)
+
       return li;
     }
 
@@ -3900,6 +4006,17 @@
         card.appendChild(trigger); card.appendChild(form);
       }
 
+      // Search mode: swap section name for a highlighted display div
+      if (taskSearchTerm.trim()) {
+        const term = taskSearchTerm.trim();
+        const nDisp = document.createElement("div");
+        nDisp.className = "section-name section-name-display";
+        nDisp.innerHTML = highlightMatch(section.name || "", term);
+        head.replaceChild(nDisp, nameInput);
+        const secEdit = head.querySelector(".edit-btn");
+        if (secEdit) secEdit.style.display = "none";
+      }
+
       return card;
     }
 
@@ -3951,10 +4068,37 @@
         empty.textContent = "No sections yet. Click + New section to get started.";
         activeRoot.appendChild(empty);
       } else {
+        const taskQ = taskSearchTerm.trim().toLowerCase();
+        let renderedAnySection = false;
         sections.forEach(s => {
-          const sTasks = activeTasks.filter(t => t.sectionId === s.id);
+          let sTasks = activeTasks.filter(t => t.sectionId === s.id);
+          // Fully-completed sections (0 open tasks, >=1 closed) drop out of
+          // the Active pane — they remain intact in the History pane with all
+          // their completed-task data. Brand-new sections with no tasks at all
+          // stay here so the user can add tasks to them.
+          if (sTasks.length === 0 && closedTasks.some(t => t.sectionId === s.id)) return;
+          if (taskQ) {
+            const sectionMatches = (s.name || "").toLowerCase().indexOf(taskQ) >= 0;
+            if (!sectionMatches) {
+              sTasks = sTasks.filter(t => (t.text || "").toLowerCase().indexOf(taskQ) >= 0);
+              if (sTasks.length === 0) return; // no match in this section — skip it
+            }
+          }
           activeRoot.appendChild(makeSectionCard(s, sTasks, "active"));
+          renderedAnySection = true;
         });
+        if (taskQ && !renderedAnySection) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = `No tasks or sections match "${taskSearchTerm.trim()}".`;
+          activeRoot.appendChild(empty);
+        } else if (!taskQ && !renderedAnySection) {
+          // Every section is fully completed — nothing left in Active.
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "All caught up! Completed sections are in the History pane below.";
+          activeRoot.appendChild(empty);
+        }
       }
 
       const sectionsWithDone = sections.filter(s => closedTasks.some(t => t.sectionId === s.id));
@@ -4128,11 +4272,27 @@
       }
 
       // Sort by updatedAt desc (fall back to createdAt)
-      const sorted = notes.slice().sort((a, b) => {
+      let sorted = notes.slice().sort((a, b) => {
         const ua = tsToDate(a.updatedAt || a.createdAt)?.getTime() || 0;
         const ub = tsToDate(b.updatedAt || b.createdAt)?.getTime() || 0;
         return ub - ua;
       });
+
+      // Apply search filter
+      const noteQ = noteSearchTerm.trim().toLowerCase();
+      if (noteQ) {
+        sorted = sorted.filter(n => {
+          const hay = ((n.title || "") + " " + (n.content || "") + " " + (n.url || "")).toLowerCase();
+          return hay.indexOf(noteQ) >= 0;
+        });
+        if (sorted.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "notes-empty";
+          empty.textContent = `No notes match "${noteSearchTerm.trim()}".`;
+          list.appendChild(empty);
+          return;
+        }
+      }
 
       sorted.forEach(n => {
         const card = document.createElement("div");
@@ -4232,6 +4392,19 @@
         card.appendChild(head);
         card.appendChild(content);
         card.appendChild(meta);
+
+        // Search mode: highlight the TITLE only. Content stays an
+        // editable textarea so you can still edit notes while searching.
+        if (noteQ) {
+          const term = noteSearchTerm.trim();
+          const tDisp = document.createElement("div");
+          tDisp.className = "note-title-input note-title-display";
+          tDisp.innerHTML = highlightMatch(n.title || "Untitled", term);
+          head.replaceChild(tDisp, titleInput);
+          // Title is swapped out, so its rename pencil can't work — hide it.
+          const editBtnEl = head.querySelector(".edit-btn");
+          if (editBtnEl) editBtnEl.style.display = "none";
+        }
 
         list.appendChild(card);
 
@@ -4440,6 +4613,9 @@
       catch (e) { return {}; }
     })();
     let editingTicketId = null;
+    let ticketSearchTerm = "";
+    let noteSearchTerm = "";
+    let taskSearchTerm = "";
 
     function persistTicketSort() {
       localStorage.setItem("atlas.ticketsSortField", ticketsSortField);
@@ -4539,6 +4715,26 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
+    // ---- Shared search helpers ----
+    function escapeHtml(s) {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    // Returns HTML with the first case-insensitive occurrence of `term`
+    // wrapped in <mark class="search-hl">. Safe — escapes everything else.
+    function highlightMatch(textValue, term) {
+      const s = String(textValue == null ? "" : textValue);
+      if (!term) return escapeHtml(s);
+      const i = s.toLowerCase().indexOf(term.toLowerCase());
+      if (i < 0) return escapeHtml(s);
+      return escapeHtml(s.slice(0, i))
+        + '<mark class="search-hl">' + escapeHtml(s.slice(i, i + term.length)) + '</mark>'
+        + escapeHtml(s.slice(i + term.length));
+    }
+
     function renderTickets() {
       const list = document.getElementById("ticketsList");
       if (!list) return;
@@ -4552,18 +4748,25 @@
         return;
       }
 
-      // Apply filters
+      // Apply filters + search (AND logic)
+      const q = ticketSearchTerm.trim().toLowerCase();
       const filtered = tickets.filter(t => {
         if (ticketFilters.escalation && (t.type || "internal") !== ticketFilters.escalation) return false;
         if (ticketFilters.category && (t.category || "others") !== ticketFilters.category) return false;
         if (ticketFilters.raisedBy && (t.raisedBy || "") !== ticketFilters.raisedBy) return false;
+        if (q) {
+          const haystack = ((t.subject || "") + " " + (t.raisedBy || "") + " " + (t.note || "")).toLowerCase();
+          if (haystack.indexOf(q) < 0) return false;
+        }
         return true;
       });
 
       if (filtered.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "No tickets match the current filters.";
+        empty.textContent = q
+          ? `No tickets match "${ticketSearchTerm.trim()}".`
+          : "No tickets match the current filters.";
         list.appendChild(empty);
         return;
       }
@@ -4600,7 +4803,7 @@
         head.className = "ticket-head";
         const subject = document.createElement("div");
         subject.className = "ticket-subject";
-        subject.textContent = t.subject || "(untitled)";
+        subject.innerHTML = highlightMatch(t.subject || "(untitled)", ticketSearchTerm.trim());
         head.appendChild(subject);
         const days = computeTicketAgeDays(t.dateRaised);
         const agePill = document.createElement("span");
@@ -4640,14 +4843,14 @@
         meta.appendChild(dateSpan);
         if (t.raisedBy) {
           const byEl = document.createElement("span");
-          byEl.textContent = "by " + t.raisedBy;
+          byEl.innerHTML = "by " + highlightMatch(t.raisedBy, ticketSearchTerm.trim());
           meta.appendChild(byEl);
         }
         card.appendChild(meta);
         if (t.note) {
           const noteEl = document.createElement("div");
           noteEl.className = "ticket-note";
-          noteEl.textContent = t.note;
+          noteEl.innerHTML = highlightMatch(t.note, ticketSearchTerm.trim());
           card.appendChild(noteEl);
         }
         list.appendChild(card);
@@ -5333,6 +5536,29 @@
       });
       document.getElementById("clearTicketFilters").addEventListener("click", clearTicketFilters);
 
+      // Search input
+      const ticketSearchEl = document.getElementById("ticketSearch");
+      const ticketSearchWrap = document.getElementById("ticketSearchWrap");
+      ticketSearchEl.addEventListener("input", () => {
+        ticketSearchTerm = ticketSearchEl.value;
+        ticketSearchWrap.classList.toggle("has-text", !!ticketSearchTerm.trim());
+        renderTickets();
+      });
+      ticketSearchEl.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") {
+          ticketSearchEl.value = ""; ticketSearchTerm = "";
+          ticketSearchWrap.classList.remove("has-text");
+          renderTickets();
+        }
+      });
+      document.getElementById("ticketSearchClear").addEventListener("click", () => {
+        ticketSearchEl.value = ""; ticketSearchTerm = "";
+        ticketSearchWrap.classList.remove("has-text");
+        renderTickets();
+        ticketSearchEl.focus();
+      });
+
       applyTicketControlsFromState();
     }
 
@@ -5358,6 +5584,70 @@
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
       });
     })();
+
+    // ---- Wire up: Notes search ----
+    {
+      const btn = $("notesSearchBtn");
+      const row = $("notesSearchRow");
+      const input = $("notesSearch");
+      const closeBtn = $("notesSearchClose");
+      const closeSearch = () => {
+        input.value = ""; noteSearchTerm = "";
+        row.style.display = "none";
+        btn.classList.remove("is-active");
+        renderNotes();
+      };
+      btn.addEventListener("click", () => {
+        const showing = row.style.display !== "none";
+        if (showing) { closeSearch(); }
+        else {
+          row.style.display = "flex";
+          btn.classList.add("is-active");
+          input.focus();
+        }
+      });
+      input.addEventListener("input", () => {
+        noteSearchTerm = input.value;
+        renderNotes();
+      });
+      input.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") closeSearch();
+      });
+      closeBtn.addEventListener("click", () => { closeSearch(); });
+    }
+
+    // ---- Wire up: Tasks search ----
+    {
+      const btn = $("tasksSearchBtn");
+      const row = $("tasksSearchRow");
+      const input = $("tasksSearch");
+      const closeBtn = $("tasksSearchClose");
+      const closeSearch = () => {
+        input.value = ""; taskSearchTerm = "";
+        row.style.display = "none";
+        btn.classList.remove("is-active");
+        render();
+      };
+      btn.addEventListener("click", () => {
+        const showing = row.style.display !== "none";
+        if (showing) { closeSearch(); }
+        else {
+          row.style.display = "flex";
+          btn.classList.add("is-active");
+          input.focus();
+        }
+      });
+      input.addEventListener("input", () => {
+        taskSearchTerm = input.value;
+        render();
+      });
+      input.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") closeSearch();
+      });
+      closeBtn.addEventListener("click", () => { closeSearch(); });
+    }
 
     // ---- Wire up: Welcome card ----
     async function dismissWelcome() {
